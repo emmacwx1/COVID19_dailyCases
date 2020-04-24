@@ -7,5 +7,22 @@ package covid19;
  *
  */
 public class Reader {
-
+	
+	//instance variables
+	private String file;
+	
+	
+	//constructor
+	public Reader(String file){
+		this.file = file;
+	}
+	
+	//methods
+	
+	//1
+	//get clean content
+	
+	
+	
+	
 }
