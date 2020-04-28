@@ -36,6 +36,8 @@ public class GUI implements ActionListener {
 		frame.add(panel, BorderLayout.CENTER);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("COVID-19 Cases and Deaths");
+		
+		
 		frame.pack();
 		frame.setVisible(true);
 		
