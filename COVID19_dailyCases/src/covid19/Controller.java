@@ -33,9 +33,21 @@ public class Controller {
 		
 		List<List<String>> cleanFile = file.cleanContent();
 		
-		MyFileWriter.writeFile("cleanFile.csv", cleanFile, true);
+		String cleanFileName = "cleanFile.csv";
 		
+		MyFileWriter.writeFile(cleanFileName, cleanFile, true);
+
+		MakeMaps cleanfile = new MakeMaps(cleanFileName);
 		
+		List<String> cleanFileRows = cleanfile.cleanFileRow();
+		
+		cleanfile.dailyMap("case");
+		
+		System.out.println(cleanfile.getDailyCase("2020-04-09", "Kansas City", "Missouri"));
+		
+		cleanfile.dailyMap("death");
+		
+		System.out.println(cleanfile.getDailyDeath("2020-04-09", "Kansas City", "Missouri"));
 		//option1: look up per day, single day increase in chosen county
 		//option2: look up per day, single day increase in chosen state
 		//option3: look up per month, monthly increase in chosen county

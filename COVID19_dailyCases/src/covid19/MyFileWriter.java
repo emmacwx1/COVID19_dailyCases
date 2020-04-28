@@ -8,7 +8,14 @@ import java.util.List;
 
 public class MyFileWriter {
 
-public static void writeFile(String fileName, List<List<String>> cleanFile, boolean append) {
+	
+	/**
+	 * write the list of list from reader into a new csv file that is clean, with date, month, day, county, state, cases and deaths as columns
+	 * @param fileName
+	 * @param cleanFile
+	 * @param append
+	 */
+	public static void writeFile(String fileName, List<List<String>> cleanFile, boolean append) {
 		
 		//File file = new File(fileName);
 		FileWriter fileWriter = null;
