@@ -19,12 +19,23 @@ public class MakeMaps {
 	List<String> cleanFileRow = new ArrayList<String>();
 	
 	//maps
-	private List<HashMap<String, Integer>> dailyCaseMap = new ArrayList<HashMap<String, Integer>>();
+	
+	//maps for daily info retrieval
+	public List<HashMap<String, Integer>> dailyCaseMap = new ArrayList<HashMap<String, Integer>>();
 	private List<HashMap<String, Integer>> dailyDeathMap = new ArrayList<HashMap<String, Integer>>();
+	
+	//maps for monthly info retrieval 
 	private List<HashMap<String, Integer>> monthlyCaseMap = new ArrayList<HashMap<String, Integer>>();
 	private List<HashMap<String, Integer>> monthDeathMap = new ArrayList<HashMap<String, Integer>>();
+	
+	//maps for sum info retrieval
 	private List<HashMap<String, Integer>> sumCaseMap = new ArrayList<HashMap<String, Integer>>();
 	private List<HashMap<String, Integer>> sumDeathMap = new ArrayList<HashMap<String, Integer>>();
+	
+	
+	//maps for GUI
+	public List<HashMap<String, String>> dateCSMap = new ArrayList<HashMap<String, String>>();
+	
 	
 	
 	//constructor
@@ -83,7 +94,7 @@ public class MakeMaps {
 		String[] lineArray;
 		String key;
 		int value = 0;
-		HashMap<String, Integer> rowInfo;
+		HashMap<String, Integer> rowInfo = new HashMap<String, Integer>();
 		
 		//Iterate over list of rows info
 		for(String row : this.cleanFileRow) {
@@ -104,7 +115,6 @@ public class MakeMaps {
 			//System.out.println(value);
 			
 			//create map of date&county key and confirm cases value
-			rowInfo = new HashMap<String, Integer>();
 			rowInfo.put(key, value);
 			
 			if(caseOrDeath.equals("case")) {
@@ -114,7 +124,127 @@ public class MakeMaps {
 			if(caseOrDeath.equals("death")){
 				this.dailyDeathMap.add(rowInfo);
 			}
-		}	
+		}
+		
+	}
+	
+	
+	public void dateCSMap(){
+		
+		String[] lineArray;
+		
+		//date is key, string
+		String key;
+		
+		//county+state is value, string
+		String value;
+		
+		HashMap<String, String> rowInfo = new HashMap<String, String>();
+		
+		for(String row : this.cleanFileRow) {
+			lineArray = row.split("[,]+");
+			
+			//get key, which is date in index 0.
+			key = lineArray[0].strip();
+			
+			//get value, which is county in index 3 and state in index 4
+			value = lineArray[3].strip() + "," + lineArray[4].strip();
+			
+			value = lineArray[3].strip();
+			
+			rowInfo.put(key, value);
+			
+			//add this to dayCountyPair list of maps
+			this.dateCSMap.add(rowInfo);
+		}
+	}
+	
+	
+	public String[] countyStateArray(){
+		
+		ArrayList<String> uniqueCountyState = new ArrayList<String>();
+		String[] lineArray;
+		String csOfRow;
+		
+		//iterate each row in the clean file
+		for(String row : this.cleanFileRow) {
+			
+			//split by ,
+			lineArray = row.split("[,]+");
+			
+			//join "county,state" as string
+			csOfRow = lineArray[3].strip() + "," + lineArray[4].strip();
+			
+			//not have this string yet
+			if(!uniqueCountyState.contains(csOfRow)) {
+				//add string to arraylist
+				uniqueCountyState.add(csOfRow);
+			}
+		}
+		
+		String[] csStringArray = new String[uniqueCountyState.size() + 1];
+		
+		csStringArray[0] = "COUNTY,STATE";
+		for(int i = 1; i < csStringArray.length; i ++) {
+			csStringArray[i] = uniqueCountyState.get(i - 1);
+		}
+		
+		return csStringArray;
+	}
+	
+	
+	public String[] csOfDate(String date) {
+		
+		//set size later depends on the size of list of values found in hashmap
+		
+		String csValue;
+		
+		List<String> csValueLs = new ArrayList<String>();
+		//iterate over list of maps
+		for(Map<String, String> info : this.dateCSMap) {
+			
+			//get set of entries containing keys and values
+			Set<Entry<String, String>> infoEntries = info.entrySet();
+			
+			//System.out.println(infoEntries.size()); //95
+			
+			//iteration happens once for each map
+			for(Entry<String, String> infoEntry : infoEntries) {
+				
+				//if select date is in the map's keys
+				if(date.equals(infoEntry.getKey())) {
+					
+					//System.out.println(infoEntry.getKey());
+					//get value
+					csValue = infoEntry.getValue();
+					//System.out.println(infoEntry.getValue());
+					
+					//append value to list
+					csValueLs.add(csValue);
+				}
+			}
+		}
+		
+		//get the length of list, which represent amount of values in the list
+		int lsLength = csValueLs.size();
+		
+		//initiate String array for this list
+		String[] csValueArray = new String[lsLength + 1];
+		csValueArray[0] = "County,State";
+		
+		//convert list back to arraylist
+		ArrayList<String> csValueAS = new ArrayList<String>(csValueLs);
+		for(int i = 1; i < csValueArray.length; i++) {
+			csValueArray[i] = csValueAS.get(i - 1);
+		}
+		
+		//System.out.println(java.util.Arrays.toString(csValueArray));
+		return csValueArray;
+	}
+	
+	
+	public List<HashMap<String, String>> getDateCSMap(){
+		return this.dateCSMap;
 	}
 	
 	
@@ -137,6 +267,7 @@ public class MakeMaps {
 			//get set of entries containing keys and values
 			Set<Entry<String, Integer>> infoEntries = info.entrySet();
 			
+			System.out.println(infoEntries.size()); //86952
 			//iteration happens once for each map
 			for(Entry<String, Integer> infoEntry : infoEntries) {
 				if(requestKey.equals(infoEntry.getKey())){

@@ -25,13 +25,16 @@ public class Controller {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
+		
 		//set file name as string
 		String fileName = "us-counties.csv";
 		
 		//create file
 		Reader file = new Reader(fileName);
 		
+		
 		List<List<String>> cleanFile = file.cleanContent();
+		
 		
 		String cleanFileName = "cleanFile.csv";
 		
@@ -43,11 +46,12 @@ public class Controller {
 		
 		cleanfile.dailyMap("case");
 		
-		System.out.println(cleanfile.getDailyCase("2020-04-09", "Kansas City", "Missouri"));
+		//System.out.println(cleanfile.getDailyCase("2020-04-09", "Kansas City", "Missouri"));
 		
 		cleanfile.dailyMap("death");
 		
-		System.out.println(cleanfile.getDailyDeath("2020-04-09", "Kansas City", "Missouri"));
+		
+		//System.out.println(cleanfile.getDailyDeath("2020-04-09", "Kansas City", "Missouri"));
 		//option1: look up per day, single day increase in chosen county
 		//option2: look up per day, single day increase in chosen state
 		//option3: look up per month, monthly increase in chosen county
@@ -55,9 +59,9 @@ public class Controller {
 		//option5: look up sum of cases, up till the chosen date, in chosen county
 		//option6: look up sum of cases, up till the chosen date, in chosen state
 		
-		//new GUI();
-	
-	
+		new GUI();
+
 	}
+	
 
 }

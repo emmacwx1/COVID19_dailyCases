@@ -115,4 +115,50 @@ public class Reader {
 		return this.cleanFile;
 	}
 	
+	
+	/**
+	 * Remove duplicate value
+	 * Allow GUI to access the date column
+	 * @return ArrayList of date
+	 */
+	public String[] dateArray(){
+		ArrayList<String> uniqueDate = new ArrayList<String>();
+		
+		for(String eachRowDate : this.date) {
+			if(!uniqueDate.contains(eachRowDate)) {
+				uniqueDate.add(eachRowDate);
+			}
+		}
+		
+		String[] dateStringArray = new String[uniqueDate.size() + 1];
+		dateStringArray[0] = "DATE";
+		for(int i = 1; i < dateStringArray.length; i++) {
+			dateStringArray[i] = uniqueDate.get(i - 1);
+		}
+		
+		return dateStringArray;
+	}
+	
+	
+	/**
+	 * Allow GUI to access the month column
+	 * @return ArrayList of date
+	 */
+	public String[] monthArray(){
+		ArrayList<String> uniqueMonth = new ArrayList<String>();
+		
+		for(String eachRowMonth : this.month) {
+			if(!uniqueMonth.contains(eachRowMonth)) {
+				uniqueMonth.add(eachRowMonth);
+			}
+		}
+		
+		String[] monthStringArray = new String[uniqueMonth.size() + 1];
+		monthStringArray[0] = "MONTH";
+		for(int i = 1; i < monthStringArray.length; i++) {
+			monthStringArray[i] = uniqueMonth.get(i - 1);
+		}
+		
+		return monthStringArray;
+	}
 }

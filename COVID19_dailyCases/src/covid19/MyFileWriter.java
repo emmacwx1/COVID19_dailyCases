@@ -22,6 +22,8 @@ public class MyFileWriter {
 		PrintWriter printWriter = null;
 		
 		//declare fileWriter and printWriter
+		//reference:
+		//https://stackabuse.com/reading-and-writing-csvs-in-java/
 		try {
 			fileWriter = new FileWriter(fileName);
 			printWriter = new PrintWriter(fileWriter);
