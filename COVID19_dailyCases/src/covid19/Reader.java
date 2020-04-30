@@ -3,6 +3,7 @@ package covid19;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,10 +120,12 @@ public class Reader {
 	/**
 	 * Remove duplicate value
 	 * Allow GUI to access the date column
-	 * @return ArrayList of date
+	 * @return String Array of date
 	 */
 	public String[] dateArray(){
 		ArrayList<String> uniqueDate = new ArrayList<String>();
+		
+		Collections.sort(this.date);
 		
 		for(String eachRowDate : this.date) {
 			if(!uniqueDate.contains(eachRowDate)) {
@@ -141,11 +144,14 @@ public class Reader {
 	
 	
 	/**
-	 * Allow GUI to access the month column
-	 * @return ArrayList of date
+	 * Remove duplicate value
+	 * Allow GUI to access the date column
+	 * @return String Array of month
 	 */
 	public String[] monthArray(){
 		ArrayList<String> uniqueMonth = new ArrayList<String>();
+		
+		Collections.sort(this.month);
 		
 		for(String eachRowMonth : this.month) {
 			if(!uniqueMonth.contains(eachRowMonth)) {

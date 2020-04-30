@@ -129,7 +129,7 @@ public class GUI implements ActionListener {
         this.secondCBItems.put(5, secondCBCounty);
         this.secondCBItems.put(6, secondCBCounty);
         
-        /*
+        
         //third dropdown label: create and add
         JLabel thirdCBTitle = new JLabel("Please Select: ", SwingConstants.LEFT);
 		this.panel.add(thirdCBTitle);
@@ -142,7 +142,7 @@ public class GUI implements ActionListener {
         this.thirdCB.setPrototypeDisplayValue("XXXXXXXXXX"); // JDK1.4
         this.panel.add(this.thirdCB);
         
-		*/
+		
 		
         
         
@@ -214,12 +214,13 @@ public class GUI implements ActionListener {
 	
 	public static void main(String[] args) {
 		
-		//new GUI();
+		new GUI();
 		
+		/*
 		//read file
 		//Reader file = new Reader("us-counties.csv");
 		//file.cleanContent();
-	
+		
 		//get clean file
 		MakeMaps cleanFile = new MakeMaps("cleanFile.csv");
 		cleanFile.cleanFileRow();
@@ -228,9 +229,10 @@ public class GUI implements ActionListener {
 		//generate daily case map first
 		//cleanFile.dailyMap("case");
 		//System.out.println(cleanFile.dailyCaseMap.get(86951).size());
-		cleanFile.dateCSMap();
-		System.out.println(cleanFile.dateCSMap.get(0).size());
-		cleanFile.csOfDate("2020-04-09");
+		cleanFile.dateCSMap2();
+		System.out.println(cleanFile.dateCSMap2.get("2020-04-11").size());
+		System.out.println(cleanFile.dateCSMap2.size());
+		cleanFile.csForDate("2020-04-09");
 		
 		/*
 		//get daily cases
@@ -238,8 +240,6 @@ public class GUI implements ActionListener {
 		
 		System.out.println("Philly case: " + dailyCase);
 		
-		*/
-		/*
 		
 		List<Map<String, String>> dayCountyPair = cleanFile.getDateCSMap();
 		
@@ -252,7 +252,7 @@ public class GUI implements ActionListener {
 		//System.out.println(dayCountyPair.size());
 		//csOfDate("2020-04-09");
 		
-		System.out.println(java.util.Arrays.toString(cleanFile.csOfDate("2020-04-09")));
+		//System.out.println(cleanFile.csForDate("2020-04-11").length);
 		
 	}
 
@@ -273,10 +273,12 @@ public class GUI implements ActionListener {
 			this.secondCB.setModel(new DefaultComboBoxModel((String[]) o));
 		}
 		
-		/*
+		
 		String dateChosen = (String) this.secondCB.getSelectedItem();
 		
-		o = this.csOfDate(dateChosen);
+		GUI.cleanFile.cleanFileRow();
+		GUI.cleanFile.dateCSMap2();
+		o = GUI.cleanFile.csForDate((dateChosen));
 		
 		if(o == null) {
 			this.thirdCB.setModel(new DefaultComboBoxModel());
@@ -284,7 +286,7 @@ public class GUI implements ActionListener {
 		else {
 			this.thirdCB.setModel(new DefaultComboBoxModel((String[]) o));
 		}
-		*/
+		
 		
 	}
 
