@@ -216,7 +216,7 @@ public class GUI implements ActionListener {
 		
 		new GUI();
 		
-		/*
+		
 		//read file
 		//Reader file = new Reader("us-counties.csv");
 		//file.cleanContent();

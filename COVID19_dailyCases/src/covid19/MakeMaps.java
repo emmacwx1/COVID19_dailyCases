@@ -126,7 +126,6 @@ public class MakeMaps {
 				this.dailyDeathMap.add(rowInfo);
 			}
 		}
-		
 	}
 	
 	
