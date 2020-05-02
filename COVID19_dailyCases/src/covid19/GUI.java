@@ -215,45 +215,6 @@ public class GUI implements ActionListener {
 	public static void main(String[] args) {
 		
 		new GUI();
-		
-		
-		//read file
-		//Reader file = new Reader("us-counties.csv");
-		//file.cleanContent();
-		
-		//get clean file
-		MakeMaps cleanFile = new MakeMaps("cleanFile.csv");
-		cleanFile.cleanFileRow();
-		
-		
-		//generate daily case map first
-		//cleanFile.dailyMap("case");
-		//System.out.println(cleanFile.dailyCaseMap.get(86951).size());
-		cleanFile.dateCSMap2();
-		System.out.println(cleanFile.dateCSMap2.get("2020-04-11").size());
-		System.out.println(cleanFile.dateCSMap2.size());
-		cleanFile.csForDate("2020-04-09");
-		
-		/*
-		//get daily cases
-		int dailyCase = cleanFile.getDailyCase("2020-04-09", "Philadelphia", "Pennsylvania");
-		
-		System.out.println("Philly case: " + dailyCase);
-		
-		
-		List<Map<String, String>> dayCountyPair = cleanFile.getDateCSMap();
-		
-		System.out.println(dayCountyPair.get(0).size()); //86952
-		*/
-		
-		
-		//List<Map<String, String>> dayCountyPair = cleanFile.getDateCSMap();
-		
-		//System.out.println(dayCountyPair.size());
-		//csOfDate("2020-04-09");
-		
-		//System.out.println(cleanFile.csForDate("2020-04-11").length);
-		
 	}
 
 
