@@ -95,31 +95,59 @@ class MakeMapsTest {
 	@Test
 	void testGetMonthlyCase() {
 		//Shruthi
-		fail("Not yet implemented");
+		this.cleanFile.monthlyMap("case");
+		
+		//random row chosen from file
+		int monthlyCase = this.cleanFile.getMonthlyCase("01", "Snohomish", "Washington");
+		assertEquals(11, monthlyCase);
 	}
 
 	@Test
 	void testGetMonthlyDeath() {
 		//Shruthi
-		fail("Not yet implemented");
+		this.cleanFile.monthlyMap("death");
+		
+		//random row chosen from file
+		int monthlyDeath = this.cleanFile.getMonthlyDeath("03", "Philadelphia", "Pennsylvania");
+		assertEquals(14, monthlyDeath);
 	}
 
 	@Test
 	void testGetSumCase() {
-		//Shruthi
-		fail("Not yet implemented");
+		this.cleanFile.sumMap("case");
+		
+		int totalCasesInThisCounty = this.cleanFile.getSumCase("Snohomish", "Washington");
+		assertEquals(2267, totalCasesInThisCounty);
+		
+		totalCasesInThisCounty = this.cleanFile.getSumCase("Philadelphia", "Pennsylvania");
+		assertEquals(11877, totalCasesInThisCounty);
+		
+		totalCasesInThisCounty = this.cleanFile.getSumCase("Addison", "Vermont");
+		assertEquals(61, totalCasesInThisCounty);
 	}
 
 	@Test
 	void testGetSumDeath() {
-		//Shruthi
-		fail("Not yet implemented");
+		this.cleanFile.sumMap("death");
+		
+		int totalDeathsInThisCounty = this.cleanFile.getSumCase("Snohomish", "Washington");
+		assertEquals(102, totalDeathsInThisCounty);
+		
+		totalDeathsInThisCounty = this.cleanFile.getSumCase("Philadelphia", "Pennsylvania");
+		assertEquals(449, totalDeathsInThisCounty);
+		
+		totalDeathsInThisCounty = this.cleanFile.getSumCase("Addison", "Vermont");
+		assertEquals(2, totalDeathsInThisCounty);
+		
 	}
 
 	@Test
 	void testCsForMonth() {
 		//Shruthi 
-		fail("Not yet implemented");
+		//creating monthCSMap2 using the correct method
+		this.cleanFile.monthCSMap2();
+		
+		assertEquals(40, this.cleanFile.csForMonth("1").length);
+		
 	}
-
 }
