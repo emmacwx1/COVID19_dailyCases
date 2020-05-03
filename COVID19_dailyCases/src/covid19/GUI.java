@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -32,8 +33,8 @@ import javax.swing.JOptionPane;
 public class GUI implements ActionListener {
 	
 	//instance variables
-	static Reader file = new Reader("us-counties.csv");
-	static MakeMaps cleanFile = new MakeMaps("cleanFile.csv");
+	private Reader file;
+	private MakeMaps cleanFile;
 	private JFrame frame;
 	private JPanel panel;
 	private JComboBox<String> mainCB;
@@ -48,6 +49,21 @@ public class GUI implements ActionListener {
 	 * how to generate next dropdown based on previous dropdown choice
 	 */
 	public GUI() {
+		this.cleanFile = new MakeMaps("cleanFile.csv");
+		this.cleanFile.cleanFileRow();
+		
+		//create all the maps
+		this.cleanFile.dateCSMap2();
+		this.cleanFile.monthCSMap2();
+		
+		this.cleanFile.dailyMap("case");
+		this.cleanFile.dailyMap("death");
+		
+		this.cleanFile.monthlyMap("case");
+		this.cleanFile.monthlyMap("death");
+		
+		this.cleanFile.sumMap("case");
+		this.cleanFile.sumMap("death");
 		/**
 		 * Creating the JFrame object on which all the other stuff will be there. 
 		 */
@@ -84,20 +100,6 @@ public class GUI implements ActionListener {
 	    		+ "\n"
 	    		+ "Data collected from The New York Times, based on reports from state and local health agencies.");
 		
-		/*
-		welcome message
-		JLabel welcome = new JLabel("Welcome!");
-		welcome.setHorizontalAlignment(JLabel.LEFT);
-		this.panel.add(welcome, gbc);
-		
-		JLabel welcome2 = new JLabel("We will provide you with most updated COVID-19 cases and deaths county-sepcific!"); 
-		welcome2.setHorizontalAlignment(JLabel.LEFT);
-		this.panel.add(welcome2, gbc);
-		
-		JLabel dataSource = new JLabel("Data collected from The New York Times, based on reports from state and local health agencies.", SwingConstants.LEFT);
-		this.panel.add(dataSource, gbc);
-		*/
-		
 		/**
 		 * This is the main drop down menu.
 		 */
@@ -109,7 +111,9 @@ public class GUI implements ActionListener {
 		
 		//main drop down combobox: create and add
 		this.mainCB = new JComboBox<String>(this.getOptionArray());	
+		//this.mainCB.setActionCommand(Actions.CHOOSECB());
 		this.mainCB.addActionListener(this);
+		
 		
 		//GridBagConstraints constraints = new GridBagConstraints();
 		//set constrains details 
@@ -128,7 +132,7 @@ public class GUI implements ActionListener {
 		
 		// Create sub combo box with multiple models
         this.secondCB = new JComboBox<String>();
-       // this.secondCB.addActionListener(this);
+        this.secondCB.addActionListener(this);
         
         this.secondCB.setPrototypeDisplayValue("XXXXXXXXXX"); // JDK1.4
         this.panel.add(this.secondCB);
@@ -137,8 +141,6 @@ public class GUI implements ActionListener {
         String[] secondCBDate = this.getDateArray();
         this.secondCBItems.put(1, secondCBDate);
         this.secondCBItems.put(2, secondCBDate);
-        
-        
         
         String[] secondCBMonth = this.getMonthArray();
         this.secondCBItems.put(3, secondCBMonth);
@@ -156,21 +158,10 @@ public class GUI implements ActionListener {
 		
         //Create sub combo box with multiple models
         this.thirdCB = new JComboBox<String>();
+        this.thirdCB.addActionListener(this);
+        
         this.thirdCB.setPrototypeDisplayValue("XXXXXXXXXX"); // JDK1.4
         this.panel.add(this.thirdCB);
-        
-		/*
-		JComboBox<String> dateChoice = new JComboBox<String>(this.getDateArray());
-		this.panel.setLayout(new GridBagLayout());
-		constraints = new GridBagConstraints();
-		//set constrains details 
-		constraints.gridx = 1;
-		this.panel.add(dateChoice, constraints);
-		*/
-		
-        /**
-         * Creating a new pop-up box with the option that is chosen. 
-         */
         
 		this.frame.pack();
 		this.frame.setVisible(true);
@@ -184,12 +175,12 @@ public class GUI implements ActionListener {
 	public String[] getOptionArray() {
 		String[] options = {
 				"OPTIONS",
-				"Option 1: Get daily confirmed cases of chosen county",
-				"Option 2: Get daily death count of chosen county",
-				"Option 3: Get monthly confirmed cases of chosen county",
-				"Option 4: Get monthly death counts of chosen county",
-				"Option 5: Get total confirmed cases of chosen county",
-				"Option 6: Get total death counts of chosen county"};
+				"Option 1: Daily confirmed cases of chosen county",
+				"Option 2: Daily death count of chosen county",
+				"Option 3: Monthly confirmed cases of chosen county",
+				"Option 4: Monthly death count of chosen county",
+				"Option 5: Total confirmed cases of chosen county",
+				"Option 6: Total death count of chosen county"};
 		
 		return options;
 	}
@@ -200,8 +191,8 @@ public class GUI implements ActionListener {
 	 * @return String Array with dates
 	 */
 	public String[] getDateArray() {
-		GUI.file.cleanContent();
-		return GUI.file.dateArray();
+		this.file.cleanContent();
+		return this.file.dateArray();
 	}
 	
 	
@@ -210,8 +201,8 @@ public class GUI implements ActionListener {
 	 * @return String array of months
 	 */
 	public String[] getMonthArray() {
-		GUI.file.cleanContent();
-		return GUI.file.monthArray();
+		this.file.cleanContent();
+		return this.file.monthArray();
 	}
 	
 	/**
@@ -220,21 +211,25 @@ public class GUI implements ActionListener {
 	 */
 	public String[] getCSArray() {
 		//clean file first and get dates available to choose from date ArrayList
-		GUI.file.cleanContent();
-		GUI.cleanFile.cleanFileRow();
-		return GUI.cleanFile.countyStateArray();
+		this.file.cleanContent();
+		this.cleanFile.cleanFileRow();
+		
+		return this.cleanFile.countyStateArray();
 	}
+	
 	
 	public void itemStateChanged(ItemEvent e) {
 		//this method should be used to get the selected item from the dropdown menu. 
-		String selectedItem = this.thirdCB.getSelectedItem();
+		String selectedItem = (String) this.thirdCB.getSelectedItem();
 		
 	}
 
 	
 	public static void main(String[] args) {
-		
+
 		new GUI();
+		
+		
 	}
 
 
@@ -244,29 +239,92 @@ public class GUI implements ActionListener {
 		
 		//see which option is chosen from 1 to 6
 		int option = (int) this.mainCB.getSelectedIndex();
-		//get value from hashtable
-		Object o = this.secondCBItems.get(option);
-		
-		if(o == null) {
-			this.secondCB.setModel(new DefaultComboBoxModel());
-		}
-		else {
-			this.secondCB.setModel(new DefaultComboBoxModel((String[]) o));
-		}
-		
-		
-		String dateChosen = (String) this.secondCB.getSelectedItem();
-		
-		GUI.cleanFile.cleanFileRow();
-		GUI.cleanFile.dateCSMap2();
-		o = GUI.cleanFile.csForDate((dateChosen));
-		
-		if(o == null) {
-			this.thirdCB.setModel(new DefaultComboBoxModel());
-		}
-		else {
-			this.thirdCB.setModel(new DefaultComboBoxModel((String[]) o));
+		//store second and third dropdown menu's choices
+		String secondChoice = (String) this.secondCB.getSelectedItem();		
+		String thirdChoice = (String) this.thirdCB.getSelectedItem();
+			
+		//https://programming.vip/docs/java-swing-three-ways-to-implement-actionlistener-listener.html
+		if (e.getSource() == this.mainCB) {
+			
+			//get value from hashtable
+			Object secondCB = this.secondCBItems.get(option);
+			
+			if(secondCB == null) {
+				this.secondCB.setModel(new DefaultComboBoxModel());
+			}
+			else {
+				this.secondCB.setModel(new DefaultComboBoxModel((String[]) secondCB));
+			}
 		}
 		
 		
+		if (e.getSource() == this.secondCB) {
+			
+			if(option == 1 || option == 2) {
+				Object thirdCB = this.cleanFile.csForDate((secondChoice));
+				this.thirdCB.setModel(new DefaultComboBoxModel((String[]) thirdCB));
+
+			}
+			
+			else if (option == 3 || option == 4) {
+				Object thirdCB = this.cleanFile.csForMonth(secondChoice);
+				this.thirdCB.setModel(new DefaultComboBoxModel((String[]) thirdCB));
+			}
+			
+			else if (option == 5) {
+				
+				String[] countyState = secondChoice.split(",");
+				String county = countyState[0];
+				String state = countyState[1];
+
+				int sumCase = this.cleanFile.getSumCase(county, state);
+				
+				//show pop up window
+				JOptionPane.showMessageDialog(this.frame, "In total, there are " + sumCase + " confirmed cases in " + secondChoice + ".", "Total Cases", JOptionPane.INFORMATION_MESSAGE);
+				
+				Object thirdCB = null;
+				this.thirdCB.setModel(new DefaultComboBoxModel());
+			}
+			
+			else if (option == 6) {
+				String[] countyState = secondChoice.split(",");
+				String county = countyState[0];
+				String state = countyState[1];
+				
+				int sumDeath = this.cleanFile.getSumDeath(county, state);
+				
+				//show pop up window
+				JOptionPane.showMessageDialog(this.frame, "In total, there are " + sumDeath + " cases in " + secondChoice + ".", "Total Death", JOptionPane.INFORMATION_MESSAGE);
+				
+				Object thirdCB = null;
+				this.thirdCB.setModel(new DefaultComboBoxModel());
+			}
+		}
+		
+		if(e.getSource() == this.thirdCB) {
+			String[] countyState2 = thirdChoice.split(",");
+			String county2 = countyState2[0];
+			String state2 = countyState2[1];
+			
+			if(option == 1) {
+				int dailyCase = this.cleanFile.getDailyCase(secondChoice, county2, state2);
+				JOptionPane.showMessageDialog(this.frame, "On " + secondChoice + ", there are " + dailyCase + " confirmed cases in " + thirdChoice + ".", "Daily Cases", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+			else if (option == 2) {
+				int dailyDeath = this.cleanFile.getDailyDeath(secondChoice, county2, state2);
+				JOptionPane.showMessageDialog(this.frame, "On " + secondChoice + ", there are " + dailyDeath + " death in " + thirdChoice + ".", "Daily Death", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+			else if (option == 3) {
+				int monthlyCase = this.cleanFile.getMonthlyCase(secondChoice, county2, state2);
+				JOptionPane.showMessageDialog(this.frame, "In this month-" + secondChoice + ", there are " + monthlyCase + " confirmed cases in " + thirdChoice + ".", "Monthly Cases", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+			else if (option == 4) {
+				int monthlyDeath = this.cleanFile.getMonthlyDeath(secondChoice, county2, state2);
+				JOptionPane.showMessageDialog(this.frame, "In this month-" + secondChoice + ", there are " + monthlyDeath + " death in " + thirdChoice + ".", "Monthly Cases", JOptionPane.INFORMATION_MESSAGE);
+			}	
+		}
 	}
+}

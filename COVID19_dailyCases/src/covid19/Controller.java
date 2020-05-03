@@ -59,7 +59,7 @@ public class Controller {
 		//option5: look up sum of cases, up till the chosen date, in chosen county
 		//option6: look up sum of cases, up till the chosen date, in chosen state
 		
-		new GUI();
+		//new GUI();
 
 	}
 	

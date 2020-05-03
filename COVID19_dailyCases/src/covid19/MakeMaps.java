@@ -19,7 +19,12 @@ public class MakeMaps {
 	private String cleanFileName;
 	List<String> cleanFileRow = new ArrayList<String>();
 	
-	//maps
+	//maps for GUI
+	//public List<HashMap<String, String>> dateCSMap = new ArrayList<HashMap<String, String>>();
+	//commented this map out as we don't need it. 
+	public Map<String, List<String>> dateCSMap2 = new HashMap<String, List<String>>();
+	public Map<String, List<String>> monthCSMap2 = new HashMap<String, List<String>>();
+	
 	
 	//maps for daily info retrieval
 	private HashMap<String, Integer> dailyCaseMap = new HashMap<String, Integer>(); //created
@@ -32,12 +37,6 @@ public class MakeMaps {
 	//maps for sum info retrieval
 	private HashMap<String, Integer> sumCaseMap = new HashMap<String, Integer>(); //created
 	private HashMap<String, Integer> sumDeathMap = new HashMap<String, Integer>(); //created
-	
-	//maps for GUI
-	//public List<HashMap<String, String>> dateCSMap = new ArrayList<HashMap<String, String>>();
-	//commented this map out as we don't need it. 
-	public Map<String, List<String>> dateCSMap2 = new HashMap<String, List<String>>();
-	public Map<String, List<String>> monthCSMap2 = new HashMap<String, List<String>>();
 	
 	
 	//constructor
