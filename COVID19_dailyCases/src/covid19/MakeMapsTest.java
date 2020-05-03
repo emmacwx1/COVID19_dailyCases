@@ -98,8 +98,19 @@ class MakeMapsTest {
 		this.cleanFile.monthlyMap("case");
 		
 		//random row chosen from file
-		int monthlyCase = this.cleanFile.getMonthlyCase("01", "Snohomish", "Washington");
-		assertEquals(11, monthlyCase);
+		int monthlyCase = this.cleanFile.getMonthlyCase("03", "Philadelphia", "Pennsylvania");
+		assertEquals(1315, monthlyCase);
+		
+		monthlyCase = this.cleanFile.getMonthlyCase("04", "San Francisco", "California");
+		assertEquals(1343, monthlyCase);
+		
+		//test case 2 
+		monthlyCase = this.cleanFile.getMonthlyCase("03", "Nassau", "New York");
+		assertEquals(8544, monthlyCase);
+		
+		//test case 3 
+		monthlyCase = this.cleanFile.getMonthlyCase("04", "Sullivan", "New York");
+		assertEquals(628, monthlyCase);
 	}
 
 	@Test
@@ -109,37 +120,49 @@ class MakeMapsTest {
 		
 		//random row chosen from file
 		int monthlyDeath = this.cleanFile.getMonthlyDeath("03", "Philadelphia", "Pennsylvania");
-		assertEquals(35, monthlyDeath);
+		assertEquals(14, monthlyDeath);
+		
+		monthlyDeath = this.cleanFile.getMonthlyDeath("04", "San Francisco", "California");
+		assertEquals(22, monthlyDeath);
+		
+		monthlyDeath = this.cleanFile.getMonthlyDeath("03", "Nassau", "New York");
+		assertEquals(63, monthlyDeath);
+		
+		monthlyDeath = this.cleanFile.getMonthlyDeath("04", "Sullivan", "New York");
+		assertEquals(9, monthlyDeath);
+		
 	}
 
 	@Test
 	void testGetSumCase() {
+		//Shruthi 
+		
 		this.cleanFile.sumMap("case");
 		
 		int totalCasesInThisCounty = this.cleanFile.getSumCase("Snohomish", "Washington");
-		assertEquals(55663, totalCasesInThisCounty);
+		assertEquals(2267, totalCasesInThisCounty);
 		
-		//Shruthi I think you might listed the last date's cases instead of sum of all cases, might need to change the number
+		totalCasesInThisCounty = this.cleanFile.getSumCase("Philadelphia", "Pennsylvania");
+		assertEquals(11877, totalCasesInThisCounty);
 		
-		//totalCasesInThisCounty = this.cleanFile.getSumCase("Philadelphia", "Pennsylvania");
-		//assertEquals(11877, totalCasesInThisCounty);
-		
-		//totalCasesInThisCounty = this.cleanFile.getSumCase("Addison", "Vermont");
-		//assertEquals(61, totalCasesInThisCounty);
+		totalCasesInThisCounty = this.cleanFile.getSumCase("Addison", "Vermont");
+		assertEquals(61, totalCasesInThisCounty);
 	}
 
 	@Test
 	void testGetSumDeath() {
+		//Shruthi
+		
 		this.cleanFile.sumMap("death");
 		
 		int totalDeathsInThisCounty = this.cleanFile.getSumDeath("Snohomish", "Washington");
-		assertEquals(1979, totalDeathsInThisCounty);
+		assertEquals(102, totalDeathsInThisCounty);
 		
-		//totalDeathsInThisCounty = this.cleanFile.getSumCase("Philadelphia", "Pennsylvania");
-		//assertEquals(449, totalDeathsInThisCounty);
+		totalDeathsInThisCounty = this.cleanFile.getSumDeath("Philadelphia", "Pennsylvania");
+		assertEquals(449, totalDeathsInThisCounty);
 		
-		//totalDeathsInThisCounty = this.cleanFile.getSumCase("Addison", "Vermont");
-		//assertEquals(2, totalDeathsInThisCounty);
+		totalDeathsInThisCounty = this.cleanFile.getSumDeath("Addison", "Vermont");
+		assertEquals(2, totalDeathsInThisCounty);
 		
 	}
 
@@ -151,6 +174,15 @@ class MakeMapsTest {
 		
 		//6 county,state + 1 for header
 		assertEquals(7, this.cleanFile.csForMonth("01").length);
+		
+		//test case 2 
+		assertEquals(23, this.cleanFile.csForMonth("02").length);
+		
+		//test case 3 
+		assertEquals(2182, this.cleanFile.csForMonth("03").length);
+		
+		//test case 4
+		assertEquals(2840, this.cleanFile.csForMonth("04").length);
 		
 	}
 }

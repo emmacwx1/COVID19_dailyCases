@@ -27,28 +27,32 @@ public class Controller {
 		
 		
 		//set file name as string
-		String fileName = "us-counties.csv";
+		//String fileName = "us-counties.csv";
 		
 		//create file
-		Reader file = new Reader(fileName);
+		//Reader file = new Reader(fileName);
 		
 		
-		List<List<String>> cleanFile = file.cleanContent();
+		//List<List<String>> cleanFile = file.cleanContent();
 		
 		
 		String cleanFileName = "cleanFile.csv";
 		
-		MyFileWriter.writeFile(cleanFileName, cleanFile, true);
+		//MyFileWriter.writeFile(cleanFileName, cleanFile, true);
 
-		MakeMaps cleanfile = new MakeMaps(cleanFileName);
+		MakeMaps cleanFile = new MakeMaps(cleanFileName);
 		
-		List<String> cleanFileRows = cleanfile.cleanFileRow();
+		cleanFile.cleanFileRow();
+		cleanFile.sumMap("case");
+		cleanFile.sumMap("death");
+		System.out.println(cleanFile.sumCaseMap);
 		
-		cleanfile.dailyMap("case");
+		
+		//cleanfile.dailyMap("case");
 		
 		//System.out.println(cleanfile.getDailyCase("2020-04-09", "Kansas City", "Missouri"));
 		
-		cleanfile.dailyMap("death");
+		//cleanfile.dailyMap("death");
 		
 		
 		//System.out.println(cleanfile.getDailyDeath("2020-04-09", "Kansas City", "Missouri"));
