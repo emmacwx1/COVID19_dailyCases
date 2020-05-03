@@ -138,6 +138,8 @@ public class GUI implements ActionListener {
         this.secondCBItems.put(1, secondCBDate);
         this.secondCBItems.put(2, secondCBDate);
         
+        
+        
         String[] secondCBMonth = this.getMonthArray();
         this.secondCBItems.put(3, secondCBMonth);
         this.secondCBItems.put(4, secondCBMonth);
