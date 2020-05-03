@@ -22,12 +22,12 @@ public class MakeMaps {
 	//maps
 	
 	//maps for daily info retrieval
-	public List<HashMap<String, Integer>> dailyCaseMap = new ArrayList<HashMap<String, Integer>>(); //created
-	private List<HashMap<String, Integer>> dailyDeathMap = new ArrayList<HashMap<String, Integer>>(); //created
+	private HashMap<String, Integer> dailyCaseMap = new HashMap<String, Integer>(); //created
+	private HashMap<String, Integer> dailyDeathMap = new HashMap<String, Integer>(); //created
 	
 	//maps for monthly info retrieval 
-	private List<HashMap<String, Integer>> monthlyCaseMap = new ArrayList<HashMap<String, Integer>>(); //created
-	private List<HashMap<String, Integer>> monthlyDeathMap = new ArrayList<HashMap<String, Integer>>(); //created
+	private HashMap<String, Integer> monthlyCaseMap = new HashMap<String, Integer>(); //created
+	private HashMap<String, Integer> monthlyDeathMap = new HashMap<String, Integer>(); //created
 	
 	//maps for sum info retrieval
 	private HashMap<String, Integer> sumCaseMap = new HashMap<String, Integer>(); //created
@@ -48,7 +48,16 @@ public class MakeMaps {
 	
 	/**
 	 * Generate lists of strings which is each row of clean file
-	 * @return
+	 * clean file is written from raw file's first clean up
+	 * this clean file: 
+	 * column 0 = date in the format of "yyyy-mm-dd"
+	 * column 1 = month in the format of "mm"
+	 * column 2 = day in the format of "dd"
+	 * column 3 = county 
+	 * column 4 = state
+	 * column 5 = case
+	 * column 6 = death
+	 * @return list of strings of each row's information
 	 */
 	public List<String> cleanFileRow(){
 		
@@ -90,13 +99,10 @@ public class MakeMaps {
 	 * @param caseOrDeath
 	 */
 	public void dailyMap(String caseOrDeath) {
-		//TODO
-		//TODO stateReader override this. look at state column
 		
 		String[] lineArray;
 		String key;
 		int value = 0;
-		HashMap<String, Integer> rowInfo = new HashMap<String, Integer>();
 		
 		//Iterate over list of rows info
 		for(String row : this.cleanFileRow) {
@@ -109,29 +115,22 @@ public class MakeMaps {
 			//get value
 			if(caseOrDeath.equals("case")) {
 				value = Integer.parseInt(lineArray[5].strip());
+				this.dailyCaseMap.put(key, value);
 			}
 			
 			if(caseOrDeath.equals("death")) {
 				value = Integer.parseInt(lineArray[6].strip());
-			}
-			//System.out.println(value);
-			
-			//create map of date&county key and confirm cases value
-			rowInfo.put(key, value);
-			
-			if(caseOrDeath.equals("case")) {
-				//add map to list of maps
-				this.dailyCaseMap.add(rowInfo);
-			}
-			if(caseOrDeath.equals("death")){
-				this.dailyDeathMap.add(rowInfo);
+				this.dailyDeathMap.put(key, value);
 			}
 		}
 	}
 	
 	
+	/**
+	 * Generate dateCSMap2: map of date as key, list of county,state as key on each date
+	 * It is used for the dropdown menu in GUI that popping up the county,state available to choose from after users select a date to look at
+	 */
 	public void dateCSMap2() {
-		
 		//initiate map of string and list
 		//https://stackoverflow.com/questions/8229473/hashmap-one-key-multiple-values/8229494
 		
@@ -184,6 +183,12 @@ public class MakeMaps {
 	}
 	
 	
+	/**
+	 * Return value (county,state) of dateCSMap2 based on the chosen date
+	 * Convert and copy map's list to string array 
+	 * @param date chosen
+	 * @return value (list of county,state)
+	 */
 	public String[] csForDate(String date) {
 		
 		String existedDate;
@@ -201,7 +206,6 @@ public class MakeMaps {
 				existedCS = entry.getValue();
 			}
 		}
-		
 		Collections.sort(existedCS);
 		
 		String[] csForDate = new String[existedCS.size() + 1];
@@ -209,99 +213,13 @@ public class MakeMaps {
 		for(int i = 1; i < csForDate.length; i++) {
 			csForDate[i] = existedCS.get(i - 1);
 		}
-		
 		return csForDate;
-		
 	}
-	
-	
-	/*
-	
-	public void dateCSMap(){
-		
-		String[] lineArray;
-		
-		//date is key, string
-		String key;
-		
-		//county+state is value, string
-		String value;
-		
-		HashMap<String, String> rowInfo = new HashMap<String, String>();
-		
-		for(String row : this.cleanFileRow) {
-			lineArray = row.split("[,]+");
-			
-			//get key, which is date in index 0.
-			key = lineArray[0].strip();
-			
-			//get value, which is county in index 3 and state in index 4
-			value = lineArray[3].strip() + "," + lineArray[4].strip();
-			
-			value = lineArray[3].strip();
-			
-			rowInfo.put(key, value);
-			
-			//add this to dayCountyPair list of maps
-			this.dateCSMap.add(rowInfo);
-		}
-	}
-	
-	
-	
-	public String[] csOfDate(String date) {
-		
-		//set size later depends on the size of list of values found in hashmap
-		
-		String csValue;
-		
-		List<String> csValueLs = new ArrayList<String>();
-		//iterate over list of maps
-		for(Map<String, String> info : this.dateCSMap) {
-			
-			//get set of entries containing keys and values
-			Set<Entry<String, String>> infoEntries = info.entrySet();
-			
-			//System.out.println(infoEntries.size()); //95
-			
-			//iteration happens once for each map
-			for(Entry<String, String> infoEntry : infoEntries) {
-				
-				//if select date is in the map's keys
-				if(date.equals(infoEntry.getKey())) {
-					
-					//System.out.println(infoEntry.getKey());
-					//get value
-					csValue = infoEntry.getValue();
-					//System.out.println(infoEntry.getValue());
-					
-					//append value to list
-					csValueLs.add(csValue);
-				}
-			}
-		}
-		
-		//get the length of list, which represent amount of values in the list
-		int lsLength = csValueLs.size();
-		
-		//initiate String array for this list
-		String[] csValueArray = new String[lsLength + 1];
-		csValueArray[0] = "County,State";
-		
-		//convert list back to arraylist
-		ArrayList<String> csValueAS = new ArrayList<String>(csValueLs);
-		for(int i = 1; i < csValueArray.length; i++) {
-			csValueArray[i] = csValueAS.get(i - 1);
-		}
-		
-		//System.out.println(java.util.Arrays.toString(csValueArray));
-		return csValueArray;
-	}
-	*/
+
 	
 	/**
-	 * Remove duplicate value
-	 * Allow GUI to access the county + state columns (combine)
+	 * Generate a string array of county,state, remove duplicate value
+	 * Allow GUI to access the county + state columns (combine) as the 2nd dropdown box
 	 * @return String Array of county,state
 	 */
 	public String[] countyStateArray(){
@@ -351,20 +269,16 @@ public class MakeMaps {
 		int dailyCase = -1;
 		
 		String requestKey = date + "," + county + "," + state;
+			
+		//get set of entries containing keys and values
+		Set<Entry<String, Integer>> infoEntries = this.dailyCaseMap.entrySet();
 		
-		//iterate over list of maps
-		for(HashMap<String, Integer> info : this.dailyCaseMap) {
-			
-			//get set of entries containing keys and values
-			Set<Entry<String, Integer>> infoEntries = info.entrySet();
-			
-			//System.out.println(infoEntries.size()); //86952
-			//iteration happens once for each map
-			for(Entry<String, Integer> infoEntry : infoEntries) {
-				if(requestKey.equals(infoEntry.getKey())){
-					dailyCase = infoEntry.getValue();
-					return dailyCase;
-				}
+		//System.out.println(infoEntries.size()); //86952
+		//iteration happens once for each map
+		for(Entry<String, Integer> infoEntry : infoEntries) {
+			if(requestKey.equals(infoEntry.getKey())){
+				dailyCase = infoEntry.getValue();
+				return dailyCase;
 			}
 		}
 		return dailyCase;
@@ -384,11 +298,9 @@ public class MakeMaps {
 		
 		String requestKey = date + "," + county + "," + state;
 		
-		//iterate over list of maps
-		for(HashMap<String, Integer> info : this.dailyDeathMap) {
-			
+			//iterate over map
 			//get set of entries containing keys and values
-			Set<Entry<String, Integer>> infoEntries = info.entrySet();
+			Set<Entry<String, Integer>> infoEntries = this.dailyDeathMap.entrySet();
 			
 			//iteration happens once for each map
 			for(Entry<String, Integer> infoEntry : infoEntries) {
@@ -399,7 +311,6 @@ public class MakeMaps {
 					return dailyDeath;
 				}
 			}
-		}
 		return dailyDeath;
 	}
 		
@@ -414,8 +325,8 @@ public class MakeMaps {
 	public void monthlyMap(String caseOrDeath) {
 		String[] lineArray;
 		String key;
-		int value = 0;
-		HashMap<String, Integer> rowInformation = new HashMap<String, Integer>();
+		int count = 0;
+		//HashMap<String, Integer> rowInformation = new HashMap<String, Integer>();
 		
 		for(String row : this.cleanFileRow) {
 			
@@ -423,32 +334,35 @@ public class MakeMaps {
 			
 			//month, county, state 
 			key = lineArray[1].strip() + "," + lineArray[3].strip() + "," + lineArray[4].strip();
-			System.out.println(key);
+			//System.out.println(key);
 			
 			//get value 
 			if(caseOrDeath.equals("case")) {
-				value = Integer.parseInt(lineArray[5].strip());
+				//parse case number of the row into value
+				int rowCount = Integer.parseInt(lineArray[5].strip());
+				
+				if (!this.monthlyCaseMap.containsKey(key)) {
+					this.monthlyCaseMap.put(key, rowCount);
+				}
+				else {
+					count = this.monthlyCaseMap.get(key) + rowCount;
+					this.monthlyCaseMap.put(key, count);
+				}
 			}
 			
 			if(caseOrDeath.equals("death")) {
-				value = Integer.parseInt(lineArray[6].strip());
+				
+				int rowCount = Integer.parseInt(lineArray[6].strip());
+				
+				if(!this.monthlyDeathMap.containsKey(key)) {
+					this.monthlyDeathMap.put(key, rowCount);
+				}
+				else {
+					count = this.monthlyDeathMap.get(key) + rowCount;
+					this.monthlyDeathMap.put(key, count);
+				}
 			}
-			
-			//obtaining the value 
-			System.out.println(value);
-			
-			rowInformation.put(key, value);
-			
-			if((caseOrDeath).equals("case")){
-				this.monthlyCaseMap.add(rowInformation);
-			}
-			if((caseOrDeath).equals("death")) {
-				this.monthlyDeathMap.add(rowInformation);
-			}
-			//putting the key and the value in the map dictionary 
 		}
-		//System.out.println("Size of monthly case map" +this.monthlyCaseMap.size());
-		//System.out.println("Size of monthly death map" +this.monthlyDeathMap.size());
 	}
 	
 	
@@ -460,35 +374,19 @@ public class MakeMaps {
 	 * @return monthly case
 	 */
 	public int getMonthlyCase(String month, String county, String state) {
-		int monthlyCase = 0;
+		int monthlyCase = -1; //differentiate if no key found
 		String requestKey = month + "," + county + "," + state;
 
-		//for the list of maps 
-		for(HashMap<String, Integer> informationMap : this.monthlyCaseMap) {
-			
-			//to iterate over the individual map 
-			Set<Entry<String, Integer>> informationEntries = informationMap.entrySet();
-
-			//iterating over the key and value of 
-			for(Entry<String, Integer> infoEntry : informationEntries) {
-				System.out.println(infoEntry.getKey());
-				System.out.println(requestKey);
-				if(requestKey.equals(infoEntry.getKey())){//THIS LINE IS THE PROBLEM
-					System.out.println("key matches!");
-					
-					//System.out.println(infoEntry.getKey());
-					
-					monthlyCase = monthlyCase + infoEntry.getValue();
-					System.out.println("The value is " +infoEntry.getValue());
-					System.out.println("individual monthly case" +monthlyCase);
-				}
-				System.out.println("total number of monthly cases" + monthlyCase);
+		Set<Entry<String, Integer>> informationEntries = this.monthlyCaseMap.entrySet(); 
+		//iterate over all entries in map
+		for(Entry<String, Integer> infoEntry : informationEntries) {
+			if(requestKey.equals(infoEntry.getKey())){				
+				monthlyCase = infoEntry.getValue();
 				return monthlyCase;
 			}
-			
 		}
 		return monthlyCase;
-		}
+	}
 	
 	
 	/**
@@ -499,29 +397,21 @@ public class MakeMaps {
 	 * @return monthly death
 	 */
 	public int getMonthlyDeath(String month, String county, String state) {
-		int monthlyDeath = 0;
+		int monthlyDeath = -1; //differentiate if no key found 
 
 		String requestKey = month + "," + county + "," + state;
 
-		for(HashMap<String, Integer> information : this.monthlyDeathMap) {
-
-			Set<Entry<String, Integer>> informationEntries = information.entrySet();
-			System.out.println("Size of death information entries" +informationEntries.size());
-
-			for(Entry<String, Integer> infoEntry : informationEntries) {
-				if(requestKey.equals(infoEntry.getKey())){//THIS LINE IS THE PROBLEM
-					System.out.println("Key matches!");
-					//System.out.println(infoEntry.getKey());
-					
-					monthlyDeath = monthlyDeath + infoEntry.getValue();
-					System.out.println("individual monthly death" +monthlyDeath);
-				}
-				System.out.println("total number of monthly cases" +monthlyDeath);
+		Set<Entry<String, Integer>> informationEntries = this.monthlyDeathMap.entrySet();
+		
+		//iterate over entries in map
+		for(Entry<String, Integer> infoEntry : informationEntries) {
+			if(requestKey.equals(infoEntry.getKey())){
+				monthlyDeath = infoEntry.getValue();
 				return monthlyDeath;
 			}
 		}
 		return monthlyDeath;
-		}
+	}
 
 	/**
 	 * generate sumCaseMap if String = case;
@@ -533,7 +423,7 @@ public class MakeMaps {
 	public void sumMap(String caseOrDeath) {
 		String[] lineArray;
 		String key;
-		int value = 0;
+		int count = 0;
 
 		for(String row : this.cleanFileRow) {
 
@@ -543,40 +433,30 @@ public class MakeMaps {
 			key = lineArray[3].strip() + "," + lineArray[4].strip();
 
 			if(caseOrDeath.equals("case")) {
-				value = Integer.parseInt(lineArray[5].strip());
-				this.sumCaseMap.put(key, value);
-				
-				Set<Entry<String, Integer>> sumInformationEntries = this.sumCaseMap.entrySet();
-
-				for(Entry<String, Integer> infoEntry : sumInformationEntries) {
-					int countOfCases = 0;
-					if(key.equals(infoEntry.getKey())) {
-						countOfCases += infoEntry.getValue();
-						value = countOfCases;
-					}
+				int rowCount = Integer.parseInt(lineArray[5].strip());
+				if (!this.sumCaseMap.containsKey(key)) {
+					this.sumCaseMap.put(key, rowCount);
 				}
-				this.sumCaseMap.put(key, value);
+				else {
+					count = this.sumCaseMap.get(key) + rowCount;
+					this.sumCaseMap.put(key, count);
+				}
 			}
 
 			if(caseOrDeath.equals("death")) {
-				value = Integer.parseInt(lineArray[6].strip());
-				this.sumCaseMap.put(key, value);
-				
-				Set<Entry<String, Integer>> sumInformationEntries1 = this.sumDeathMap.entrySet();
-
-				for(Entry<String, Integer> infoEntry1 : sumInformationEntries1) {
-					int countOfDeaths = 0;
-					if(key.equals(infoEntry1.getKey())) {
-						countOfDeaths += infoEntry1.getValue();
-						value = countOfDeaths;
-					}
+				count = Integer.parseInt(lineArray[6].strip());
+				int rowCount = Integer.parseInt(lineArray[6].strip());
+				if(!this.sumDeathMap.containsKey(key)) {
+					this.sumDeathMap.put(key, rowCount);
 				}
-				this.sumDeathMap.put(key, value);
-			}
-
-			
+				else {
+					count = this.sumDeathMap.get(key) + rowCount;
+					this.sumDeathMap.put(key, count);
+				}
+			}			
 		}
 	}
+	
 	
 	/**
 	 * Return how many cases were reported in total for chosen county and state
@@ -590,17 +470,16 @@ public class MakeMaps {
 		String requestKey = county + "," + state;
 
 			Set<Entry<String, Integer>> informationEntries = this.sumCaseMap.entrySet();
-			System.out.println(informationEntries.size());
 
 			for(Entry<String, Integer> infoEntry : informationEntries) {
 				
 				if(requestKey.equals(infoEntry.getKey())){
-					System.out.println(infoEntry.getKey());
+					//System.out.println(infoEntry.getKey());
 					
-					System.out.println("The total number of cases is as follows in sumCase");
+					//System.out.println("The total number of cases is as follows in sumCase");
 					sumCase = infoEntry.getValue();
 					
-					System.out.println(infoEntry.getValue());
+					//System.out.println(infoEntry.getValue());
 					return sumCase;
 				}
 			}
@@ -620,14 +499,14 @@ public class MakeMaps {
 		String requestKey = county + "," + state;
 
 			Set<Entry<String, Integer>> informationEntries = this.sumDeathMap.entrySet();
-			System.out.println(informationEntries.size());
+			//System.out.println(informationEntries.size());
 
 			for(Entry<String, Integer> infoEntry : informationEntries) {
 				if(requestKey.equals(infoEntry.getKey())){
-					System.out.println(infoEntry.getKey());
-					System.out.println("The total number of cases is as follows in sumCase");
+					//System.out.println(infoEntry.getKey());
+					//System.out.println("The total number of cases is as follows in sumCase");
 					sumDeath = infoEntry.getValue();
-					System.out.println(infoEntry.getValue());
+					//System.out.println(infoEntry.getValue());
 					return sumDeath;
 				}
 			}
@@ -635,12 +514,11 @@ public class MakeMaps {
 	}
 	
 	
+	/**
+	 * Generate monthCSMap2: map of month as key, list of county,state as key on each date
+	 * It is used for the dropdown menu in GUI that popping up the county,state available to choose from after users select a month to look at
+	 */ 
 	public void monthCSMap2() {
-		
-		//initiate map of string and list
-		//https://stackoverflow.com/questions/8229473/hashmap-one-key-multiple-values/8229494
-		//the structure of this map should be 
-		
 		String[] lineArray;
 		
 		//date is key
@@ -680,9 +558,8 @@ public class MakeMaps {
 				//get the value (list of countyState)
 				value = this.monthCSMap2.get(key);
 				
-				//add countyState to existed value of list
-				//if the list of strings does not have this string in particular already
-				if(!value.contains(countyState)) {
+				if (!value.contains(countyState)) {
+					//add countyState to existed value of list
 					value.add(countyState);
 				}
 
@@ -692,10 +569,12 @@ public class MakeMaps {
 		}	
 	}
 	
+	
 	/**
-	 * Returns the counties and states that have coronavirus cases in a list format for the given month
-	 * @param month
-	 * @return
+	 * Returns the String array of counties and states for the chosen month
+	 * Convert and copy map's list to string array 
+	 * @param month chosen
+	 * @return value (string array of county,state)
 	 */
 	public String[] csForMonth(String month) {
 		
@@ -724,8 +603,6 @@ public class MakeMaps {
 		for(int i = 1; i < csForMonth.length; i++) {
 			csForMonth[i] = existedCS.get(i - 1);
 		}
-		
 		return csForMonth;
-		
 	}
 }
