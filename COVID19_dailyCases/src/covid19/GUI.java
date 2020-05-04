@@ -2,15 +2,18 @@ package covid19;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -23,9 +26,11 @@ import java.util.Set;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JOptionPane;
@@ -74,11 +79,11 @@ public class GUI implements ActionListener {
 		//set Layout
 		this.panel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		
 		//setup of JFrame
 		//The statement below adds the JFrame to the panel at the center.
-		this.frame.add(this.panel, BorderLayout.CENTER);
+		//this.panel.setPreferredSize(new Dimension(400, 300));
+		this.frame.getContentPane().add(this.panel, BorderLayout.CENTER);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.frame.setTitle("COVID-19 Cases and Deaths");
 
@@ -87,38 +92,44 @@ public class GUI implements ActionListener {
 	    		+ "\n"
 	    		+ "We will provide you with most updated COVID-19 cases and deaths county-specific!"
 	    		+ "\n"
-	    		+ "Data collected from The New York Times, based on reports from state and local health agencies.");
+	    		+ "Data collected from The New York Times, based on reports from state and local health agencies.", "Welcome!", JOptionPane.INFORMATION_MESSAGE);
 		
-
+		
 		//main drop down: create label and add
-		JLabel optionTitle = new JLabel("What would you like to do?");
-		this.panel.add(optionTitle);
-		optionTitle = new JLabel(" ");
-		this.panel.add(optionTitle);
+		JLabel optionTitle = new JLabel(" 1st: What would you like to do? ", SwingConstants.LEFT);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		this.panel.add(optionTitle, gbc);
+
 
 		this.mainCB = new JComboBox<String>(this.getOptionArray());	
 		this.mainCB.addActionListener(this);
 		
 		
-		//GridBagConstraints constraints = new GridBagConstraints();
-		//set constrains details 
-		//constraints.gridx = 1;
-		
 		//prevent action events from being fired when the up/down arrow keys are used 
 		this.mainCB.putClientProperty("JComboBox.isTableCellEduitor", Boolean.TRUE);
-		this.panel.add(mainCB);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		this.panel.add(mainCB, gbc);
 		
 		//second drop down: create label and add
-		JLabel secondCBTitle = new JLabel("Please Select: ", SwingConstants.LEFT);
-		this.panel.add(secondCBTitle);
-		secondCBTitle = new JLabel("");
-		this.panel.add(secondCBTitle);
+		JLabel secondCBTitle = new JLabel(" 2nd: Please Select: ", SwingConstants.LEFT);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		this.panel.add(secondCBTitle, gbc);
 
         this.secondCB = new JComboBox<String>();
         this.secondCB.addActionListener(this);
+        this.secondCB.putClientProperty("JComboBox.isTableCellEduitor", Boolean.TRUE);
         
         this.secondCB.setPrototypeDisplayValue("XXXXXXXXXX"); // JDK1.4
-        this.panel.add(this.secondCB);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+		gbc.gridy = 1;
+        this.panel.add(this.secondCB, gbc);
         
         //get different possible dropdown for second CB here
         String[] secondCBDate = this.getDateArray();
@@ -134,18 +145,25 @@ public class GUI implements ActionListener {
         this.secondCBItems.put(6, secondCBCounty);
         
         //third dropdown: create label and add
-        JLabel thirdCBTitle = new JLabel("Please Select: ", SwingConstants.LEFT);
-		this.panel.add(thirdCBTitle);
-		thirdCBTitle = new JLabel("");
-		this.panel.add(thirdCBTitle);
+        JLabel thirdCBTitle = new JLabel(" 3rd: Please Select: ", SwingConstants.LEFT);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+		gbc.gridy = 2;
+		this.panel.add(thirdCBTitle, gbc);
 
         this.thirdCB = new JComboBox<String>();
         this.thirdCB.addActionListener(this);
+        this.thirdCB.putClientProperty("JComboBox.isTableCellEduitor", Boolean.TRUE);
         
         this.thirdCB.setPrototypeDisplayValue("XXXXXXXXXX"); // JDK1.4
-        this.panel.add(this.thirdCB);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1;
+		gbc.gridy = 2;
+        this.panel.add(this.thirdCB, gbc);
         
+        //this.panel.setPreferredSize(new Dimension(400, 300));
 		this.frame.pack();
+		this.frame.setLocationRelativeTo(null);
 		this.frame.setVisible(true);
 	}
 	
@@ -275,7 +293,7 @@ public class GUI implements ActionListener {
 				int sumDeath = this.cleanFile.getSumDeath(county, state);
 				
 				//show pop up window
-				JOptionPane.showMessageDialog(this.frame, "In total, there are " + sumDeath + " cases in " + secondChoice + ".", "Total Death", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this.frame, "In total, there are " + sumDeath + " death in " + secondChoice + ".", "Total Death", JOptionPane.INFORMATION_MESSAGE);
 				
 				Object thirdCB = null;
 				this.thirdCB.setModel(new DefaultComboBoxModel());
