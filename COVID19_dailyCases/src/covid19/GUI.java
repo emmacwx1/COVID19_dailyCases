@@ -30,6 +30,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JOptionPane;
 
+/**
+ * GUI to provide users options to see daily, monthly, total confirmed cases or death of COVID-19, on their chosen county & state
+ * @author Emma Chen &amp; Shruthi Kannan
+ *
+ */
 public class GUI implements ActionListener {
 	
 	//instance variables
@@ -42,13 +47,8 @@ public class GUI implements ActionListener {
 	private JComboBox<String> thirdCB;
 	private Hashtable<Integer, String[]> secondCBItems = new Hashtable<Integer, String[]>();
 
-	/*
-	 * TODO look into how to solve this in swing
-	 * first dropdown: county or state
-	 * second dropdown: daily, month, sum
-	 * how to generate next dropdown based on previous dropdown choice
-	 */
 	public GUI() {
+		this.file = new Reader("us-counties.csv");
 		this.cleanFile = new MakeMaps("cleanFile.csv");
 		this.cleanFile.cleanFileRow();
 		
@@ -64,22 +64,14 @@ public class GUI implements ActionListener {
 		
 		this.cleanFile.sumMap("case");
 		this.cleanFile.sumMap("death");
-		/**
-		 * Creating the JFrame object on which all the other stuff will be there. 
-		 */
+		
+		//initial setup with frame and border
 		this.frame = new JFrame(); 
 		this.panel = new JPanel();
 		
-		/**
-		 * Setup panel for JFrame
-		 */
-		//set Border 
 		this.panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
 		
 		//set Layout
-		//is this what we want?? or combobox dropdown menu
-		//need to decide which layout? 
-		//this.panel.setLayout(new GridLayout(0, 1));
 		this.panel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -89,29 +81,22 @@ public class GUI implements ActionListener {
 		this.frame.add(this.panel, BorderLayout.CENTER);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.frame.setTitle("COVID-19 Cases and Deaths");
-	
-		/**
-		 * Welcome message 
-		 */
-		//add dialog box to the frame. 
+
+		//Welcome message: add dialog box to the frame. 
 		JOptionPane.showMessageDialog(this.frame, "Welcome to the COVID-19 data access!"
 	    		+ "\n"
 	    		+ "We will provide you with most updated COVID-19 cases and deaths county-specific!"
 	    		+ "\n"
 	    		+ "Data collected from The New York Times, based on reports from state and local health agencies.");
 		
-		/**
-		 * This is the main drop down menu.
-		 */
-		//main drop down label: create and add
+
+		//main drop down: create label and add
 		JLabel optionTitle = new JLabel("What would you like to do?");
 		this.panel.add(optionTitle);
 		optionTitle = new JLabel(" ");
 		this.panel.add(optionTitle);
-		
-		//main drop down combobox: create and add
+
 		this.mainCB = new JComboBox<String>(this.getOptionArray());	
-		//this.mainCB.setActionCommand(Actions.CHOOSECB());
 		this.mainCB.addActionListener(this);
 		
 		
@@ -122,15 +107,13 @@ public class GUI implements ActionListener {
 		//prevent action events from being fired when the up/down arrow keys are used 
 		this.mainCB.putClientProperty("JComboBox.isTableCellEduitor", Boolean.TRUE);
 		this.panel.add(mainCB);
-		//this.panel.add(this.mainCB, constraints);
 		
-		//second drop down label: create and add
+		//second drop down: create label and add
 		JLabel secondCBTitle = new JLabel("Please Select: ", SwingConstants.LEFT);
 		this.panel.add(secondCBTitle);
 		secondCBTitle = new JLabel("");
 		this.panel.add(secondCBTitle);
-		
-		// Create sub combo box with multiple models
+
         this.secondCB = new JComboBox<String>();
         this.secondCB.addActionListener(this);
         
@@ -150,13 +133,12 @@ public class GUI implements ActionListener {
         this.secondCBItems.put(5, secondCBCounty);
         this.secondCBItems.put(6, secondCBCounty);
         
-        //third dropdown label: create and add
+        //third dropdown: create label and add
         JLabel thirdCBTitle = new JLabel("Please Select: ", SwingConstants.LEFT);
 		this.panel.add(thirdCBTitle);
 		thirdCBTitle = new JLabel("");
 		this.panel.add(thirdCBTitle);
-		
-        //Create sub combo box with multiple models
+
         this.thirdCB = new JComboBox<String>();
         this.thirdCB.addActionListener(this);
         
@@ -192,6 +174,7 @@ public class GUI implements ActionListener {
 	 */
 	public String[] getDateArray() {
 		this.file.cleanContent();
+		this.file.uniqueDate();
 		return this.file.dateArray();
 	}
 	
@@ -202,6 +185,7 @@ public class GUI implements ActionListener {
 	 */
 	public String[] getMonthArray() {
 		this.file.cleanContent();
+		this.file.uniqueDate();
 		return this.file.monthArray();
 	}
 	
@@ -216,20 +200,11 @@ public class GUI implements ActionListener {
 		
 		return this.cleanFile.countyStateArray();
 	}
-	
-	
-	public void itemStateChanged(ItemEvent e) {
-		//this method should be used to get the selected item from the dropdown menu. 
-		String selectedItem = (String) this.thirdCB.getSelectedItem();
-		
-	}
 
 	
 	public static void main(String[] args) {
 
 		new GUI();
-		
-		
 	}
 
 
@@ -244,9 +219,11 @@ public class GUI implements ActionListener {
 		String thirdChoice = (String) this.thirdCB.getSelectedItem();
 			
 		//https://programming.vip/docs/java-swing-three-ways-to-implement-actionlistener-listener.html
+		
+		//action for selection on first drop down menu, determine to display date, or month, or county,state
 		if (e.getSource() == this.mainCB) {
 			
-			//get value from hashtable
+			//get value from hashtable, key is option 1-6, value is the date, month and county,state array based on option
 			Object secondCB = this.secondCBItems.get(option);
 			
 			if(secondCB == null) {
@@ -257,7 +234,7 @@ public class GUI implements ActionListener {
 			}
 		}
 		
-		
+		//action for selection on second drop down menu, determine third dropdown menu whether to display coutny,states based on second choice, or to display sum cases or death
 		if (e.getSource() == this.secondCB) {
 			
 			if(option == 1 || option == 2) {
@@ -271,6 +248,9 @@ public class GUI implements ActionListener {
 				this.thirdCB.setModel(new DefaultComboBoxModel((String[]) thirdCB));
 			}
 			
+			//if chose to see sum of cases or death, no need to select from third menu and directly display result
+			
+			//option 5: sum cases
 			else if (option == 5) {
 				
 				String[] countyState = secondChoice.split(",");
@@ -286,6 +266,7 @@ public class GUI implements ActionListener {
 				this.thirdCB.setModel(new DefaultComboBoxModel());
 			}
 			
+			//option 6: sum death
 			else if (option == 6) {
 				String[] countyState = secondChoice.split(",");
 				String county = countyState[0];
@@ -301,6 +282,13 @@ public class GUI implements ActionListener {
 			}
 		}
 		
+		//action for third drop down menu's selection, further determine which result to show based on option 1-6
+		/*
+		 * Option 1: daily cases
+		 * Option 2: daily death
+		 * Option 3: monthly case
+		 * Option 4: monthly death
+		 * */
 		if(e.getSource() == this.thirdCB) {
 			String[] countyState2 = thirdChoice.split(",");
 			String county2 = countyState2[0];

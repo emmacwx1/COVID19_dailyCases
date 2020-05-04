@@ -26,6 +26,8 @@ public class Reader {
 	private ArrayList<String> state = new ArrayList<String>();
 	private ArrayList<String> dailyCase = new ArrayList<String>();
 	private ArrayList<String> dailyDeath = new ArrayList<String>();
+	private ArrayList<String> uniqueDate = new ArrayList<String>();
+	private Map<String, Integer> dateOnDay = new HashMap<String, Integer>();
 
 	
 	
@@ -118,27 +120,61 @@ public class Reader {
 	
 	
 	/**
+	 * Generate list of date from day 1 to day 95
+	 * Remove duplicate dates
+	 * @return list of date
+	 */
+	public ArrayList<String> uniqueDate(){
+		Collections.sort(this.date);
+		
+		for(String eachRowDate : this.date) {
+			if(!this.uniqueDate.contains(eachRowDate)) {
+				this.uniqueDate.add(eachRowDate);
+			}
+		}
+		
+		return this.uniqueDate;
+	}
+	
+	
+	/**
+	 * Generate a map of date and day, for look into daily case/death count
+	 * for example: date 2020-01-21 is day 1, 2020-04-24 is day 95
+	 * Return which day the chosen date is on
+	 */
+	public int dateOnDay(String date) {
+		
+		int day = 1;
+		
+		for (String eachDate : this.uniqueDate()) {
+			this.dateOnDay.put(eachDate, day);
+			day++;
+		}	
+		
+		return this.dateOnDay.get(date);
+	}
+	
+	
+	/**
+	 * Return date on day map for access
+	 * @return
+	 */
+	public Map<String, Integer> getDateOnDayMap(){
+		return this.dateOnDay;
+	}
+	
+	
+	/**
 	 * Remove duplicate value
 	 * Allow GUI to access the date column
 	 * @return String Array of date
 	 */
 	public String[] dateArray(){
-		ArrayList<String> uniqueDate = new ArrayList<String>();
-		
-		Collections.sort(this.date);
-		
-		for(String eachRowDate : this.date) {
-			if(!uniqueDate.contains(eachRowDate)) {
-				uniqueDate.add(eachRowDate);
-			}
-		}
-		
-		String[] dateStringArray = new String[uniqueDate.size() + 1];
+		String[] dateStringArray = new String[this.uniqueDate().size() + 1];
 		dateStringArray[0] = "DATE";
 		for(int i = 1; i < dateStringArray.length; i++) {
-			dateStringArray[i] = uniqueDate.get(i - 1);
+			dateStringArray[i] = this.uniqueDate.get(i - 1);
 		}
-		
 		return dateStringArray;
 	}
 	

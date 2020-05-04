@@ -17,6 +17,8 @@ import java.util.Set;
 public class MakeMaps {
 
 	//instance variables
+	Reader file = new Reader("us-counties.csv");
+	
 	private String cleanFileName;
 	List<String> cleanFileRow = new ArrayList<String>();
 	
@@ -128,6 +130,7 @@ public class MakeMaps {
 	
 	/**
 	 * return how many daily cases were reported on the chosen date, county and state
+	 * subtract current date's cases from previous date's cases
 	 * @param date
 	 * @param county
 	 * @param state
@@ -135,32 +138,54 @@ public class MakeMaps {
 	 */
 	public int getDailyCase(String date, String county, String state) {
 		
-		int dailyCase = -1;
+		this.file.cleanContent();
 		
-		String[] dateBreak = date.split("-");
-		String year = dateBreak[0];
-		String month = dateBreak[1];
-		String day = dateBreak[2];
+		int dailyCase = 0;
+		String currentKey = String.join(",", date, county, state);
+		//which day is this
+		int currentDay = this.file.dateOnDay(date);
 		
-		int newDay = Integer.parseInt(day) - 1;
-		String newDayStr = Integer.toString(newDay);
+		int previousDay = currentDay - 1;
+		String previousDate = null;
 		
-		String previousDate = String.join("-", year, month, newDayStr);
-		String preKey = String.join(",", previousDate, county, state);
-		
-		String requestKey = date + "," + county + "," + state;
-		
-		int dateCase = this.dailyCaseMap.get(requestKey);
-		int preDayCase = this.dailyCaseMap.get(preKey);
-		
-		dailyCase = dateCase - preDayCase;
-		
+		//get previous day's date format by looking into Reader's map of date and day number
+		for(Map.Entry<String, Integer> entry: this.file.getDateOnDayMap().entrySet()) {
+			if(previousDay != 0 && previousDay == entry.getValue()) {
+				previousDate = entry.getKey();
+				
+				//join previous date, county, state back to match map's key format
+				String previousKey = String.join(",", previousDate, county, state);
+				
+				if(this.dailyCaseMap.get(currentKey) == null) {
+					return dailyCase;
+				}
+				else {
+					int dateCase = this.dailyCaseMap.get(currentKey);
+					
+					//if there is no previous date's data, the current day is the first day it started tracking cases, return current date's cases
+					if(this.dailyCaseMap.get(previousKey) == null) {
+						return this.dailyCaseMap.get(currentKey);
+					}
+					
+					//if the key exists, calculate daily increase
+					else {
+						int preDayCase = this.dailyCaseMap.get(previousKey);
+						dailyCase = dateCase - preDayCase;
+						return dailyCase;
+					}
+				}
+			}
+			else if (previousDay == 0) {
+				return this.dailyCaseMap.get(currentKey);
+			}
+		}
 		return dailyCase;
 	}
 	
 	
 	/**
 	 * return how many daily deaths were reported on the chosen date, county and state
+	 * subtract current date's death from previous date's death
 	 * @param date
 	 * @param county
 	 * @param state
@@ -168,23 +193,49 @@ public class MakeMaps {
 	 */
 	public int getDailyDeath(String date, String county, String state) {
 			
-		int dailyDeath = -1;
+		this.file.cleanContent();
 		
-		String requestKey = date + "," + county + "," + state;
+		int dailyDeath = 0;
+		String currentKey = String.join(",", date, county, state);
+		//which day is this
+		int currentDay = this.file.dateOnDay(date);
 		
-			//iterate over map
-			//get set of entries containing keys and values
-			Set<Entry<String, Integer>> infoEntries = this.dailyDeathMap.entrySet();
-			
-			//iteration happens once for each map
-			for(Entry<String, Integer> infoEntry : infoEntries) {
-				if(requestKey.equals(infoEntry.getKey())){
-					//System.out.println(infoEntry.getKey());
-					dailyDeath = infoEntry.getValue();
-					//System.out.println(infoEntry.getValue());
+		int previousDay = currentDay - 1;
+		String previousDate = null;
+		
+		//get previous day's date format by looking into Reader's map of date and day number
+		for(Map.Entry<String, Integer> entry: this.file.getDateOnDayMap().entrySet()) {
+			if(previousDay != 0 && previousDay == entry.getValue()) {
+				previousDate = entry.getKey();
+				
+				//join previous date, county, state back to match map's key format
+				String previousKey = String.join(",", previousDate, county, state);
+				
+				//if current date key also does not exist, it might not started recording yet, return 0
+				if(this.dailyDeathMap.get(currentKey) == null) {
 					return dailyDeath;
 				}
+			
+				else {
+					int dateDeath = this.dailyDeathMap.get(currentKey);
+					
+					//if there is no previous date's data, the current day is the first day it started tracking cases, return current date's cases
+					if(this.dailyDeathMap.get(previousKey) == null) {
+						return this.dailyDeathMap.get(currentKey);
+					}
+					
+					//if the key exists, calculate daily increase
+					else {
+						int preDayDeath = this.dailyDeathMap.get(previousKey);
+						dailyDeath = dateDeath - preDayDeath;
+						return dailyDeath;
+					}
+				}
 			}
+			else if (previousDay == 0) {
+				return this.dailyDeathMap.get(currentKey);
+			}
+		}
 		return dailyDeath;
 	}
 	
@@ -478,7 +529,7 @@ public class MakeMaps {
 	
 	/**
 	 * Generate monthCSMap2: map of month as key, list of county,state as key on each date
-	 * It is used for the dropdown menu in GUI that popping up the county,state available to choose from after users select a month to look at
+	 * It is used for the drop down menu in GUI that popping up the county,state available to choose from after users select a month to look at (connection between 1st and 2nd drop down menu) 
 	 */ 
 	public void monthCSMap2() {
 		String[] lineArray;

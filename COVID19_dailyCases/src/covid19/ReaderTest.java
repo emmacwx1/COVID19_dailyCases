@@ -16,10 +16,27 @@ class ReaderTest {
 	}
 
 	@Test
+	void testUniqueDate() {
+		//Emma
+		
+		//in total there are 95 days
+		assertEquals(95, this.file.uniqueDate().size());
+	}
+	
+	@Test
+	void testDateOnDay() {
+		//Emma
+
+		assertEquals(95, this.file.dateOnDay("2020-04-24"));
+		assertEquals(1, this.file.dateOnDay("2020-01-21"));
+	}
+	
+	
+	@Test
 	void testDateArray() {
 		//Emma
 		
-		//in total there is 95 days + 1 for header
+		//in total there are 95 days + 1 for header
 		assertEquals(96, this.file.dateArray().length);
 	}
 
@@ -27,7 +44,7 @@ class ReaderTest {
 	void testMonthArray() {
 		//Emma
 		
-		//in total there is 4 month + 1 for header
+		//in total there are 4 months + 1 for header
 		assertEquals(5, this.file.monthArray().length);
 	}
 

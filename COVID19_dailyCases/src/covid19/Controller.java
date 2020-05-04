@@ -19,7 +19,7 @@ public class Controller {
 	
 	//instance variables
 	
-	GUI gui = new GUI();
+	//GUI gui = new GUI();
 	
 	
 	public static void main(String[] args) {
@@ -27,15 +27,22 @@ public class Controller {
 		
 		
 		//set file name as string
-		//String fileName = "us-counties.csv";
+		String fileName = "us-counties.csv";
 		
 		//create file
-		//Reader file = new Reader(fileName);
+		Reader file = new Reader(fileName);
+		
+		file.cleanContent();
+		
+		file.uniqueDate();
+		file.dateOnDay();
+		
+		file.dateOnDay.sorted;
+		
+		System.out.println(file.dateOnDay);
 		
 		
-		//List<List<String>> cleanFile = file.cleanContent();
-		
-		
+		/*
 		String cleanFileName = "cleanFile.csv";
 		
 		//MyFileWriter.writeFile(cleanFileName, cleanFile, true);
@@ -47,7 +54,7 @@ public class Controller {
 		cleanFile.sumMap("death");
 		System.out.println(cleanFile.sumCaseMap);
 		
-		
+		*/
 		//cleanfile.dailyMap("case");
 		
 		//System.out.println(cleanfile.getDailyCase("2020-04-09", "Kansas City", "Missouri"));

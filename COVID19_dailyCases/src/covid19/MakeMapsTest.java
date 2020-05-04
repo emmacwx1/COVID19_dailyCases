@@ -46,7 +46,6 @@ class MakeMapsTest {
 		//2843 county,state in total + 1 for header
 		assertEquals(2844, this.cleanFile.countyStateArray().length);
 		
-		//we will measure if string array is sorted here
 		String countyState = "Abbeville,South Carolina";
 		assertEquals(countyState, this.cleanFile.countyStateArray()[1]);
 		countyState = "Acadia,Louisiana";
@@ -61,17 +60,28 @@ class MakeMapsTest {
 		//Emma
 		this.cleanFile.dailyMap("case");
 		
-		//random row chosen from file
-		int dailyCase = this.cleanFile.getDailyCase("2020-04-09", "Kansas City", "Missouri");
-		assertEquals(257, dailyCase);
+		int dailyCase = this.cleanFile.getDailyCase("2020-04-24", "New York City", "New York");
+		assertEquals(4629, dailyCase);
 		
-		//first row of info
+		//no record for NYC yet, return 0
+		dailyCase = this.cleanFile.getDailyCase("2020-01-24", "New York City", "New York");
+		assertEquals(0, dailyCase);
+		
+		//edge case, 1st day should be current day data
 		dailyCase = this.cleanFile.getDailyCase("2020-01-21", "Snohomish", "Washington");
 		assertEquals(1, dailyCase);
 		
-		//last row of info
-		dailyCase = this.cleanFile.getDailyCase("2020-04-24", "Washakie", "Wyoming");
-		assertEquals(4, dailyCase);
+		//edge case, 2nd day of Snohomish, Washington does not have any increase
+		dailyCase = this.cleanFile.getDailyCase("2020-01-22", "Snohomish", "Washington");
+		assertEquals(0, dailyCase);
+		
+		//edge case, 1st day of Cook Illinois is 2020-01-24, there is no previous day data, so return current date's cases
+		dailyCase = this.cleanFile.getDailyCase("2020-01-24", "Cook", "Illinois");
+		assertEquals(1, dailyCase);
+		
+		//edge case, Cook Illinois did not have increase from 2nd day
+		dailyCase = this.cleanFile.getDailyCase("2020-01-27", "Cook", "Illinois");
+		assertEquals(0, dailyCase);
 	}
 
 	@Test
@@ -79,17 +89,29 @@ class MakeMapsTest {
 		//Emma
 		this.cleanFile.dailyMap("death");
 		
-		//random row chosen from file
-		int dailyDeath = this.cleanFile.getDailyDeath("2020-01-28", "Cook", "Illinois");
+		//normal case
+		int dailyDeath = this.cleanFile.getDailyDeath("2020-04-24", "New York City", "New York");
+		assertEquals(268, dailyDeath);
+		
+		//edge case, NYC did not have current date or previous date here yet, return 0
+		dailyDeath = this.cleanFile.getDailyDeath("2020-01-24", "New York City", "New York");
 		assertEquals(0, dailyDeath);
 		
-		//first row of info
-		dailyDeath = this.cleanFile.getDailyDeath("2020-01-21", "Snohomish", "Washington");
+		//edge case, 1st day should be current day data
+		dailyDeath = this.cleanFile.getDailyDeath("2020-03-01", "New York City", "New York");
+		assertEquals(0, dailyDeath);
+				
+		//edge case, 1st day of Cook Illinois is 2020-01-28, there is no previous day data, so return current date's death
+		dailyDeath = this.cleanFile.getDailyDeath("2020-01-28", "Cook", "Illinois");
 		assertEquals(0, dailyDeath);
 		
-		//last row of info
-		dailyDeath = this.cleanFile.getDailyDeath("2020-04-24", "Washakie", "Wyoming");
+		//edge case, Cook Illinois did not have increase death from previous date, test transition from end of month to start of next month
+		dailyDeath = this.cleanFile.getDailyDeath("2020-02-01", "Cook", "Illinois");
 		assertEquals(0, dailyDeath);
+		
+		//Cook first day to have any death
+		dailyDeath = this.cleanFile.getDailyDeath("2020-03-17", "Cook", "Illinois");
+		assertEquals(1, dailyDeath);
 	}
 
 	@Test
@@ -97,20 +119,20 @@ class MakeMapsTest {
 		//Shruthi
 		this.cleanFile.monthlyMap("case");
 		
-		//random row chosen from file
 		int monthlyCase = this.cleanFile.getMonthlyCase("03", "Philadelphia", "Pennsylvania");
 		assertEquals(1315, monthlyCase);
 		
 		monthlyCase = this.cleanFile.getMonthlyCase("04", "San Francisco", "California");
 		assertEquals(1343, monthlyCase);
 		
-		//test case 2 
 		monthlyCase = this.cleanFile.getMonthlyCase("03", "Nassau", "New York");
 		assertEquals(8544, monthlyCase);
 		
-		//test case 3 
 		monthlyCase = this.cleanFile.getMonthlyCase("04", "Sullivan", "New York");
 		assertEquals(628, monthlyCase);
+		
+		monthlyCase = this.cleanFile.getMonthlyCase("04", "New York City", "New York");
+		assertEquals(150484, monthlyCase);
 	}
 
 	@Test
@@ -118,7 +140,6 @@ class MakeMapsTest {
 		//Shruthi
 		this.cleanFile.monthlyMap("death");
 		
-		//random row chosen from file
 		int monthlyDeath = this.cleanFile.getMonthlyDeath("03", "Philadelphia", "Pennsylvania");
 		assertEquals(14, monthlyDeath);
 		
@@ -130,6 +151,9 @@ class MakeMapsTest {
 		
 		monthlyDeath = this.cleanFile.getMonthlyDeath("04", "Sullivan", "New York");
 		assertEquals(9, monthlyDeath);
+		
+		monthlyDeath = this.cleanFile.getMonthlyDeath("04", "New York City", "New York");
+		assertEquals(11157, monthlyDeath);
 		
 	}
 
@@ -147,6 +171,7 @@ class MakeMapsTest {
 		
 		totalCasesInThisCounty = this.cleanFile.getSumCase("Addison", "Vermont");
 		assertEquals(61, totalCasesInThisCounty);
+		
 	}
 
 	@Test
@@ -169,19 +194,14 @@ class MakeMapsTest {
 	@Test
 	void testCsForMonth() {
 		//Shruthi 
+		
 		//creating monthCSMap2 using the correct method
 		this.cleanFile.monthCSMap2();
 		
-		//6 county,state + 1 for header
+		//county,state + 1 for header
 		assertEquals(7, this.cleanFile.csForMonth("01").length);
-		
-		//test case 2 
 		assertEquals(23, this.cleanFile.csForMonth("02").length);
-		
-		//test case 3 
 		assertEquals(2182, this.cleanFile.csForMonth("03").length);
-		
-		//test case 4
 		assertEquals(2840, this.cleanFile.csForMonth("04").length);
 		
 	}
