@@ -6,13 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public class MakeMaps {
 
@@ -23,23 +20,21 @@ public class MakeMaps {
 	List<String> cleanFileRow = new ArrayList<String>();
 	
 	//maps for GUI
-	//public List<HashMap<String, String>> dateCSMap = new ArrayList<HashMap<String, String>>();
-	//commented this map out as we don't need it. 
 	public Map<String, List<String>> dateCSMap2 = new HashMap<String, List<String>>();
 	public Map<String, List<String>> monthCSMap2 = new HashMap<String, List<String>>();
 	
 	
 	//maps for daily info retrieval
-	private HashMap<String, Integer> dailyCaseMap = new HashMap<String, Integer>(); //created
-	private HashMap<String, Integer> dailyDeathMap = new HashMap<String, Integer>(); //created
+	private HashMap<String, Integer> dailyCaseMap = new HashMap<String, Integer>(); 
+	private HashMap<String, Integer> dailyDeathMap = new HashMap<String, Integer>(); 
 	
 	//maps for monthly info retrieval 
-	private HashMap<String, Integer> monthlyCaseMap = new HashMap<String, Integer>(); //created
-	private HashMap<String, Integer> monthlyDeathMap = new HashMap<String, Integer>(); //created
+	private HashMap<String, Integer> monthlyCaseMap = new HashMap<String, Integer>(); 
+	private HashMap<String, Integer> monthlyDeathMap = new HashMap<String, Integer>(); 
 	
 	//maps for sum info retrieval
-	public HashMap<String, Integer> sumCaseMap = new HashMap<String, Integer>(); //created
-	private HashMap<String, Integer> sumDeathMap = new HashMap<String, Integer>(); //created
+	private HashMap<String, Integer> sumCaseMap = new HashMap<String, Integer>(); 
+	private HashMap<String, Integer> sumDeathMap = new HashMap<String, Integer>(); 
 	
 	
 	//constructor
@@ -156,24 +151,17 @@ public class MakeMaps {
 				//join previous date, county, state back to match map's key format
 				String previousKey = String.join(",", previousDate, county, state);
 				
-				if(this.dailyCaseMap.get(currentKey) == null) {
-					return dailyCase;
+				int todayCases = 0;
+				if (this.dailyCaseMap.containsKey(currentKey)) {
+					todayCases = this.dailyCaseMap.get(currentKey);
 				}
-				else {
-					int dateCase = this.dailyCaseMap.get(currentKey);
-					
-					//if there is no previous date's data, the current day is the first day it started tracking cases, return current date's cases
-					if(this.dailyCaseMap.get(previousKey) == null) {
-						return this.dailyCaseMap.get(currentKey);
-					}
-					
-					//if the key exists, calculate daily increase
-					else {
-						int preDayCase = this.dailyCaseMap.get(previousKey);
-						dailyCase = dateCase - preDayCase;
-						return dailyCase;
-					}
+				
+				int yesterdayCases = 0;
+				if (this.dailyCaseMap.containsKey(previousKey)) {
+					yesterdayCases = this.dailyCaseMap.get(previousKey);
 				}
+				
+				return todayCases - yesterdayCases;
 			}
 			else if (previousDay == 0) {
 				return this.dailyCaseMap.get(currentKey);
@@ -211,26 +199,17 @@ public class MakeMaps {
 				//join previous date, county, state back to match map's key format
 				String previousKey = String.join(",", previousDate, county, state);
 				
-				//if current date key also does not exist, it might not started recording yet, return 0
-				if(this.dailyDeathMap.get(currentKey) == null) {
-					return dailyDeath;
+				int todayDeath = 0;
+				if (this.dailyDeathMap.containsKey(currentKey)) {
+					todayDeath = this.dailyDeathMap.get(currentKey);
 				}
-			
-				else {
-					int dateDeath = this.dailyDeathMap.get(currentKey);
-					
-					//if there is no previous date's data, the current day is the first day it started tracking cases, return current date's cases
-					if(this.dailyDeathMap.get(previousKey) == null) {
-						return this.dailyDeathMap.get(currentKey);
-					}
-					
-					//if the key exists, calculate daily increase
-					else {
-						int preDayDeath = this.dailyDeathMap.get(previousKey);
-						dailyDeath = dateDeath - preDayDeath;
-						return dailyDeath;
-					}
+				
+				int yesterdayDeath = 0;
+				if (this.dailyDeathMap.containsKey(previousKey)) {
+					yesterdayDeath = this.dailyDeathMap.get(previousKey);
 				}
+				
+				return todayDeath - yesterdayDeath;
 			}
 			else if (previousDay == 0) {
 				return this.dailyDeathMap.get(currentKey);
@@ -268,32 +247,17 @@ public class MakeMaps {
 			
 			//get value, which is county in index 3 and state in index 4
 			countyState = lineArray[3].strip() + "," + lineArray[4].strip();
-			
-			//look if key is already in the map
-			//if key NOT in map yet
+
 			if(!this.dateCSMap2.containsKey(key)) {
-				
-				//initiate list to store new countyState
-				List<String> newValue = new ArrayList<String>();
-				
-				//add countyState to the list
-				newValue.add(countyState);
-				
-				//put key:value pair in map
-				this.dateCSMap2.put(key, newValue);
+				this.dateCSMap2.put(key, new ArrayList<String>());
 			}
-			//if key already in map
-			else {
-				//get the value (list of countyState)
-				value = this.dateCSMap2.get(key);
-				
-				//add countyState to existed value of list
+			
+			//add to the value list unless it's not already in the list
+			value = this.dateCSMap2.get(key);
+			if (!value.contains(countyState)) {
 				value.add(countyState);
-				
-				//update and put back into Map
-				this.dateCSMap2.put(key, value);
-			}	
-		}	
+			}
+		}
 	}
 	
 	
@@ -305,21 +269,11 @@ public class MakeMaps {
 	 */
 	public String[] csForDate(String date) {
 		
-		String existedDate;
 		List<String> existedCS = new ArrayList<String>();
-		
-		for(Entry<String, List<String>> entry : this.dateCSMap2.entrySet()) {
-			
-			//get date which is key
-			existedDate = entry.getKey();
-			
-			//if existed date == provide key
-			if(existedDate.equals(date)) {
-				
-				//return existed county,state
-				existedCS = entry.getValue();
-			}
+		if (this.dateCSMap2.containsKey(date)) {
+			existedCS = this.dateCSMap2.get(date);
 		}
+		
 		Collections.sort(existedCS);
 		
 		String[] csForDate = new String[existedCS.size() + 1];
@@ -391,7 +345,6 @@ public class MakeMaps {
 			
 			//month, county, state 
 			key = lineArray[1].strip() + "," + lineArray[3].strip() + "," + lineArray[4].strip();
-			//System.out.println(key);
 			
 			//get value 
 			if(caseOrDeath.equals("case")) {
@@ -403,9 +356,7 @@ public class MakeMaps {
 				}
 				else {
 					count = this.monthlyCaseMap.get(key);
-					if(count < rowCount) {
-						this.monthlyCaseMap.put(key, rowCount);
-					}
+					this.monthlyCaseMap.put(key, Math.max(count, rowCount));
 				}
 			}
 			
@@ -418,9 +369,7 @@ public class MakeMaps {
 				}
 				else {
 					count = this.monthlyDeathMap.get(key);
-					if(count < rowCount) {
-						this.monthlyDeathMap.put(key, rowCount);
-					}
+					this.monthlyDeathMap.put(key, Math.max(count, rowCount));
 				}
 			}
 		}
@@ -435,8 +384,48 @@ public class MakeMaps {
 	 * @return monthly case
 	 */
 	public int getMonthlyCase(String month, String county, String state) {
+		
+		int monthlyCase = -1;
+		
 		String requestKey = month + "," + county + "," + state;
-		return this.monthlyCaseMap.get(requestKey);
+		
+		//if month is 01, get first month's last date
+		if(month.equals("01")) {
+			monthlyCase = this.monthlyCaseMap.get(requestKey);
+			return monthlyCase;
+		}
+		
+		//if month is 02, 03, 04, subtract from previous month's cases
+		else if (month.equals("02")) {
+			String lastMonthKey = String.join(",", "01", county, state);
+			if(this.monthlyCaseMap.get(lastMonthKey) != null) {
+				monthlyCase = this.monthlyCaseMap.get(requestKey) - this.monthlyCaseMap.get(lastMonthKey);
+				return monthlyCase;
+			}
+			else {
+				return this.monthlyCaseMap.get(requestKey);
+			}
+		}
+		else if (month.equals("03")) {
+			String lastMonthKey = String.join(",", "02", county, state);
+			if(this.monthlyCaseMap.get(lastMonthKey) != null) {
+				monthlyCase = this.monthlyCaseMap.get(requestKey) - this.monthlyCaseMap.get(lastMonthKey);
+				return monthlyCase;
+			}
+			else {
+				return this.monthlyCaseMap.get(requestKey);
+			}
+		}
+		else {
+			String lastMonthKey = String.join(",", "03", county, state);
+			if(this.monthlyCaseMap.get(lastMonthKey) != null) {
+				monthlyCase = this.monthlyCaseMap.get(requestKey) - this.monthlyCaseMap.get(lastMonthKey);
+				return monthlyCase;
+			}
+			else {
+				return this.monthlyCaseMap.get(requestKey);
+			}
+		}
 	}
 	
 	
@@ -448,8 +437,47 @@ public class MakeMaps {
 	 * @return monthly death
 	 */
 	public int getMonthlyDeath(String month, String county, String state) {
+		int monthlyDeath = -1;
+		
 		String requestKey = month + "," + county + "," + state;
-		return this.monthlyDeathMap.get(requestKey);
+		
+		//if month is 01, get first month's last date
+		if(month.equals("01")) {
+			monthlyDeath = this.monthlyDeathMap.get(requestKey);
+			return monthlyDeath;
+		}
+		
+		//if month is 02, 03, 04, subtract from previous month's Deaths
+		else if (month.equals("02")) {
+			String lastMonthKey = String.join(",", "01", county, state);
+			if(this.monthlyDeathMap.get(lastMonthKey) != null) {
+				monthlyDeath = this.monthlyDeathMap.get(requestKey) - this.monthlyDeathMap.get(lastMonthKey);
+				return monthlyDeath;
+			}
+			else {
+				return this.monthlyDeathMap.get(requestKey);
+			}
+		}
+		else if (month.equals("03")) {
+			String lastMonthKey = String.join(",", "02", county, state);
+			if(this.monthlyDeathMap.get(lastMonthKey) != null) {
+				monthlyDeath = this.monthlyDeathMap.get(requestKey) - this.monthlyDeathMap.get(lastMonthKey);
+				return monthlyDeath;
+			}
+			else {
+				return this.monthlyDeathMap.get(requestKey);
+			}
+		}
+		else {
+			String lastMonthKey = String.join(",", "03", county, state);
+			if(this.monthlyDeathMap.get(lastMonthKey) != null) {
+				monthlyDeath = this.monthlyDeathMap.get(requestKey) - this.monthlyDeathMap.get(lastMonthKey);
+				return monthlyDeath;
+			}
+			else {
+				return this.monthlyDeathMap.get(requestKey);
+			}
+		}
 	}
 
 	/**
@@ -478,14 +506,11 @@ public class MakeMaps {
 				}
 				else {
 					count = this.sumCaseMap.get(key);
-					if(count < rowCount) {
-						this.sumCaseMap.put(key, rowCount);
-					}
+					this.sumCaseMap.put(key, Math.max(count, rowCount));
 				}
 			}
 
 			if(caseOrDeath.equals("death")) {
-				count = Integer.parseInt(lineArray[6].strip());
 				int rowCount = Integer.parseInt(lineArray[6].strip());
 				if(!this.sumDeathMap.containsKey(key)) {
 					this.sumDeathMap.put(key, rowCount);
@@ -494,9 +519,7 @@ public class MakeMaps {
 					count = this.sumDeathMap.get(key);
 					
 					//ignore the smaller number, store the larger number
-					if(count < rowCount) {
-						this.sumDeathMap.put(key, rowCount);
-					}
+					this.sumDeathMap.put(key, Math.max(count, rowCount));
 				}
 			}			
 		}
@@ -553,33 +576,16 @@ public class MakeMaps {
 			//get value, which is county in index 3 and state in index 4
 			countyState = lineArray[3].strip() + "," + lineArray[4].strip();
 			
-			//look if key is already in the map
-			//if key NOT in map yet
 			if(!this.monthCSMap2.containsKey(key)) {
-				
-				//initiate list to store new countyState
-				List<String> newValue = new ArrayList<String>();
-				
-				//add countyState to the list
-				newValue.add(countyState);
-				
-				//put key:value pair in map
-				this.monthCSMap2.put(key, newValue);
+				this.monthCSMap2.put(key, new ArrayList<String>());
 			}
-			//if key already in map, value not already in map
-			else {
-				//get the value (list of countyState)
-				value = this.monthCSMap2.get(key);
-				
-				if (!value.contains(countyState)) {
-					//add countyState to existed value of list
-					value.add(countyState);
-				}
 
-				//update and put back into Map
-				this.monthCSMap2.put(key, value);
-			}	
-		}	
+			//add to the value list unless it's not already in the list
+			value = this.monthCSMap2.get(key);
+			if (!value.contains(countyState)) {
+				value.add(countyState);
+			}
+		}
 	}
 	
 	
@@ -591,20 +597,9 @@ public class MakeMaps {
 	 */
 	public String[] csForMonth(String month) {
 		
-		String existedMonth;
 		List<String> existedCS = new ArrayList<String>();
-		
-		for(Entry<String, List<String>> entry : this.monthCSMap2.entrySet()) {
-			
-			//get date which is key
-			existedMonth = entry.getKey();
-			
-			//if existed date == provide key
-			if(existedMonth.equals(month)) {
-				
-				//return existed county,state
-				existedCS = entry.getValue();
-			}
+		if (this.monthCSMap2.containsKey(month)) {
+			existedCS = this.monthCSMap2.get(month);
 		}
 		
 		//sorting the existed counties, state list 

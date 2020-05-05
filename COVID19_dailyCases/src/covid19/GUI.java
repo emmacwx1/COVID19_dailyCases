@@ -1,36 +1,16 @@
 package covid19;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.EventObject;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JOptionPane;
@@ -81,8 +61,6 @@ public class GUI implements ActionListener {
 		GridBagConstraints gbc = new GridBagConstraints();
 		
 		//setup of JFrame
-		//The statement below adds the JFrame to the panel at the center.
-		//this.panel.setPreferredSize(new Dimension(400, 300));
 		this.frame.getContentPane().add(this.panel, BorderLayout.CENTER);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.frame.setTitle("COVID-19 Cases and Deaths");
@@ -228,6 +206,7 @@ public class GUI implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		//https://stackoverflow.com/questions/31362898/how-to-change-combobox-options-depending-on-the-selected-item-of-a-different-com
 		
 		//see which option is chosen from 1 to 6
@@ -329,7 +308,7 @@ public class GUI implements ActionListener {
 			
 			else if (option == 4) {
 				int monthlyDeath = this.cleanFile.getMonthlyDeath(secondChoice, county2, state2);
-				JOptionPane.showMessageDialog(this.frame, "In this month-" + secondChoice + ", there are " + monthlyDeath + " death in " + thirdChoice + ".", "Monthly Cases", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this.frame, "In this month-" + secondChoice + ", there are " + monthlyDeath + " death in " + thirdChoice + ".", "Monthly Death", JOptionPane.INFORMATION_MESSAGE);
 			}	
 		}
 	}

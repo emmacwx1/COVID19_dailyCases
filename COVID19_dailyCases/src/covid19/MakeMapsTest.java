@@ -21,7 +21,6 @@ class MakeMapsTest {
 
 	@Test
 	void testCsForDate() {
-		//Emma
 		this.cleanFile.dateCSMap2();
 		
 		//first date
@@ -41,8 +40,6 @@ class MakeMapsTest {
 
 	@Test
 	void testCountyStateArray() {
-		//Emma
-		
 		//2843 county,state in total + 1 for header
 		assertEquals(2844, this.cleanFile.countyStateArray().length);
 		
@@ -57,7 +54,6 @@ class MakeMapsTest {
 
 	@Test
 	void testGetDailyCase() {
-		//Emma
 		this.cleanFile.dailyMap("case");
 		
 		int dailyCase = this.cleanFile.getDailyCase("2020-04-24", "New York City", "New York");
@@ -86,7 +82,6 @@ class MakeMapsTest {
 
 	@Test
 	void testGetDailyDeath() {
-		//Emma
 		this.cleanFile.dailyMap("death");
 		
 		//normal case
@@ -116,51 +111,57 @@ class MakeMapsTest {
 
 	@Test
 	void testGetMonthlyCase() {
-		//Shruthi
 		this.cleanFile.monthlyMap("case");
 		
+		//philadelphia's first date of record is in March, should just return march cases
 		int monthlyCase = this.cleanFile.getMonthlyCase("03", "Philadelphia", "Pennsylvania");
 		assertEquals(1315, monthlyCase);
 		
+		//04, SF case = 1343, 03, SF case = 400; 1343 - 400 = 943
 		monthlyCase = this.cleanFile.getMonthlyCase("04", "San Francisco", "California");
-		assertEquals(1343, monthlyCase);
+		assertEquals(943, monthlyCase);
 		
+		//04, Nassau, NY case = 8544, no March data
 		monthlyCase = this.cleanFile.getMonthlyCase("03", "Nassau", "New York");
 		assertEquals(8544, monthlyCase);
 		
+		//04, Sullivan, NYC case = 628; 03, Sullivan, NYC case = 109; 628 - 109 = 519
 		monthlyCase = this.cleanFile.getMonthlyCase("04", "Sullivan", "New York");
-		assertEquals(628, monthlyCase);
+		assertEquals(519, monthlyCase);
 		
+		//04 NYC case = 150484, 03 NYC case = 43139; 150484 - 43139 = 107345
 		monthlyCase = this.cleanFile.getMonthlyCase("04", "New York City", "New York");
-		assertEquals(150484, monthlyCase);
+		assertEquals(107345, monthlyCase);
 	}
 
 	@Test
 	void testGetMonthlyDeath() {
-		//Shruthi
 		this.cleanFile.monthlyMap("death");
 		
+		//philadelphia's first date of record is in March, should just return march cases
 		int monthlyDeath = this.cleanFile.getMonthlyDeath("03", "Philadelphia", "Pennsylvania");
 		assertEquals(14, monthlyDeath);
 		
+		//04, SF death = 22, 03, SF death = 6; 22 - 6 = 16
 		monthlyDeath = this.cleanFile.getMonthlyDeath("04", "San Francisco", "California");
-		assertEquals(22, monthlyDeath);
+		assertEquals(16, monthlyDeath);
 		
+		//04, Nassau, NY death = 63, no Mardata
 		monthlyDeath = this.cleanFile.getMonthlyDeath("03", "Nassau", "New York");
 		assertEquals(63, monthlyDeath);
 		
+		//04, Sullivan, NY death = 9; 03, Sullivan, NYC death = 1; 9 - 1 = 8
 		monthlyDeath = this.cleanFile.getMonthlyDeath("04", "Sullivan", "New York");
-		assertEquals(9, monthlyDeath);
+		assertEquals(8, monthlyDeath);
 		
+		//03, NYC death = 11157, 03 NYC death = 1096; 11157 - 1096 = 10061
 		monthlyDeath = this.cleanFile.getMonthlyDeath("04", "New York City", "New York");
-		assertEquals(11157, monthlyDeath);
+		assertEquals(10061, monthlyDeath);
 		
 	}
 
 	@Test
 	void testGetSumCase() {
-		//Shruthi 
-		
 		this.cleanFile.sumMap("case");
 		
 		int totalCasesInThisCounty = this.cleanFile.getSumCase("Snohomish", "Washington");
@@ -175,9 +176,7 @@ class MakeMapsTest {
 	}
 
 	@Test
-	void testGetSumDeath() {
-		//Shruthi
-		
+	void testGetSumDeath() {		
 		this.cleanFile.sumMap("death");
 		
 		int totalDeathsInThisCounty = this.cleanFile.getSumDeath("Snohomish", "Washington");

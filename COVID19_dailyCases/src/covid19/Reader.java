@@ -125,13 +125,13 @@ public class Reader {
 	 * @return list of date
 	 */
 	public ArrayList<String> uniqueDate(){
-		Collections.sort(this.date);
-		
 		for(String eachRowDate : this.date) {
 			if(!this.uniqueDate.contains(eachRowDate)) {
 				this.uniqueDate.add(eachRowDate);
 			}
 		}
+		
+		Collections.sort(this.uniqueDate);
 		
 		return this.uniqueDate;
 	}
@@ -140,7 +140,7 @@ public class Reader {
 	/**
 	 * Generate a map of date and day, for look into daily case/death count
 	 * for example: date 2020-01-21 is day 1, 2020-04-24 is day 95
-	 * Return which day the chosen date is on
+	 * @Return which day the chosen date is on
 	 */
 	public int dateOnDay(String date) {
 		
